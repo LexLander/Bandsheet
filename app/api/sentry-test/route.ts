@@ -8,6 +8,3 @@ export async function POST() {
   throw new Error('test')
 }
 
-export async function GET() {
-  throw new Error("Sentry test from route.ts");
-}
