@@ -1,5 +1,9 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from "next";
+
+const workspaceRoot = path.dirname(fileURLToPath(import.meta.url));
 
 function getSupabaseImagePattern() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -23,6 +27,7 @@ const remotePatterns = [
 ].filter((pattern): pattern is NonNullable<ReturnType<typeof getSupabaseImagePattern>> | { protocol: 'https'; hostname: string; pathname: string } => Boolean(pattern));
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: workspaceRoot,
   experimental: {
     optimizePackageImports: ['@supabase/supabase-js', '@supabase/ssr'],
   },
