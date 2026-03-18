@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/alex/Desktop/MyProjects/SetListSong -not -path */node_modules/* -not -path */.next/* -not -path */.git/* -not -path */.vercel/* -type d)",
+      "Bash(open -a \"Cursor\" /Users/alex/Desktop/MyProjects/SetListSong/.env.local)",
+      "Bash(code /Users/alex/Desktop/MyProjects/SetListSong/.env.local)",
+      "Bash(code /Users/alex/Desktop/MyProjects/SetListSong/supabase/migrations/001_initial_schema.sql)",
+      "Bash(ls -la \"/Users/alex/Desktop/MyProjects/SetListSong/app/\\(auth\\)/\")",
+      "Bash(ls -la \"/Users/alex/Desktop/MyProjects/SetListSong/app/\\(auth\\)/login/\")",
+      "Bash(ls -la \"/Users/alex/Desktop/MyProjects/SetListSong/app/\\(auth\\)/register/\")",
+      "Bash(open http://localhost:3000/dashboard)",
+      "Bash(npx tsc:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/groups)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/groups/new)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/dashboard)",
+      "Bash(find /Users/alex/Desktop/MyProjects/SetListSong/lib -name *.ts)",
+      "Bash(xargs cat:*)"
+    ]
+  }
+}

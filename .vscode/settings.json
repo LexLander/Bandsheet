@@ -1,0 +1,6 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "app": true,
+        "/groups/actions.ts": true
+    }
+}

@@ -1,0 +1,16 @@
+{
+  "builtInKeys": 303,
+  "blockedByDbConstraintCount": 0,
+  "blockedByDbConstraintSample": [],
+  "validForCurrentConstraint": 303,
+  "dbVariablesForBuiltIn": 303,
+  "dbValuesUpsertedRUUK": 606,
+  "missingKeysCount": 0,
+  "missingEnCount": 0,
+  "missingRuCount": 0,
+  "missingUkCount": 0,
+  "sampleMissingKeys": [],
+  "sampleMissingEn": [],
+  "sampleMissingRu": [],
+  "sampleMissingUk": []
+}

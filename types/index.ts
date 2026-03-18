@@ -1,5 +1,5 @@
 // ============================================================
-// Все TypeScript типы проекта SetListSong
+// Все TypeScript типы проекта BandSheet
 // ============================================================
 
 // --- Роли пользователей ---
@@ -13,17 +13,25 @@ export type GroupRole = 'leader' | 'deputy' | 'switcher' | 'member'
 export interface Profile {
   id: string
   name: string | null
+  email?: string | null
   avatar_url: string | null
+  platform_role?: PlatformRole
+  is_root_admin?: boolean
+  is_blocked?: boolean
+  is_blacklisted?: boolean
   created_at: string
   settings?: UserSettings | null
 }
 
 export interface UserSettings {
-  display_mode: 'words_chords' | 'words_only' | 'chords_only'
-  font_size: 'sm' | 'md' | 'lg' | 'xl'
-  bg_color: string
-  text_color: string
-  sync_mode: 'online' | 'offline'
+  /** Тема оформления */
+  theme?: 'system' | 'light' | 'dark'
+  /** Компактный режим отображения */
+  compact?: boolean
+  /** Показывать временные метки */
+  showTimestamps?: boolean
+  /** Локаль интерфейса (напр. 'uk', 'en', 'ru') */
+  locale?: string
 }
 
 // --- Группы ---
