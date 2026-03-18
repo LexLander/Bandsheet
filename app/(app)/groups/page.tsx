@@ -1,5 +1,6 @@
 import { createClient, getAuthUser } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import GroupsListClient from './GroupsListClient'
 import GroupsBulkControls from './GroupsBulkControls'
 import { getServerT } from '@/lib/i18n/server'
@@ -8,7 +9,9 @@ import { fetchUserGroupsByMembership } from '@/lib/db/groups'
 export default async function GroupsPage() {
   const [supabase, user, { t }] = await Promise.all([createClient(), getAuthUser(), getServerT()])
 
-  const memberships = await fetchUserGroupsByMembership(supabase, user!.id)
+  if (!user) redirect('/login')
+
+  const memberships = await fetchUserGroupsByMembership(supabase, user.id)
 
   const groups = memberships
     .filter((group) => !group.is_deleted)
