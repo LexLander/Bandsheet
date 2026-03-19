@@ -25,7 +25,32 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out
 }
 
+function hasUsableSupabaseAuditEnv() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? ''
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? ''
+
+  if (!url || !serviceRoleKey) return false
+  if (url === 'https://test.supabase.co') return false
+  if (serviceRoleKey === 'test-service-role-key') return false
+
+  return true
+}
+
 async function main() {
+  if (!hasUsableSupabaseAuditEnv()) {
+    console.log(
+      JSON.stringify(
+        {
+          skipped: true,
+          reason: 'supabase_audit_env_not_configured',
+        },
+        null,
+        2
+      )
+    )
+    return
+  }
+
   const admin = createAdminClient()
   const catalog = getBuiltInCatalog()
   const now = new Date().toISOString()
