@@ -2,6 +2,8 @@ import LanguagesSection from '@/components/admin/i18n/LanguagesSection'
 import MatrixSection from '@/components/admin/i18n/MatrixSection'
 import { getServerT } from '@/lib/i18n/server'
 
+export const revalidate = 0
+
 export default async function AdminLanguagesPage() {
   const { t } = await getServerT()
 
