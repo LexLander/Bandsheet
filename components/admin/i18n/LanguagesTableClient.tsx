@@ -211,9 +211,9 @@ export default function LanguagesTableClient({
 
           <form action={setI18nLanguageEnabled}>
             <input type="hidden" name="code" value={selectedCode} />
-            <input type="hidden" name="enabled" value="false" />
+            <input type="hidden" name="enabled" value={selectedLanguage.is_enabled ? 'false' : 'true'} />
             <button type="submit" className="px-3 py-1.5 rounded border border-black/15 dark:border-white/15 text-xs">
-              {t.admin.languages.disable}
+              {selectedLanguage.is_enabled ? t.admin.languages.disable : t.admin.languages.enable}
             </button>
           </form>
 
