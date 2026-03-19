@@ -287,6 +287,7 @@ type TranslationTree = {
       addBtn: string
       selected: string
       translate: string
+      enable: string
       disable: string
       delete: string
       translateTitle: string
@@ -638,6 +639,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         addBtn: '+ Додати',
         selected: 'Вибрано',
         translate: 'Перевести',
+        enable: 'Увімкнути',
         disable: 'Вимкнути',
         delete: 'Видалити',
         translateTitle: 'Перекласти мову',
@@ -987,6 +989,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         addBtn: '+ Добавить',
         selected: 'Выбрано',
         translate: 'Перевести',
+        enable: 'Включить',
         disable: 'Отключить',
         delete: 'Удалить',
         translateTitle: 'Перевести язык',
@@ -1336,6 +1339,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         addBtn: '+ Add',
         selected: 'Selected',
         translate: 'Translate',
+        enable: 'Enable',
         disable: 'Disable',
         delete: 'Delete',
         translateTitle: 'Translate language',
