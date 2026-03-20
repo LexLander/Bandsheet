@@ -22,7 +22,7 @@ export async function searchSongs(
 ): Promise<Song[]> {
 	const { data, error } = await supabase
 		.from('songs_public')
-		.select('id, title, artist, key, bpm, time_signature, language, genre, access_type, created_at')
+		.select('id, title, artist, text_chords, key, bpm, time_signature, language, genre, access_type, created_at')
 		.or(`title.ilike.%${query}%,artist.ilike.%${query}%`)
 		.order('title')
 		.limit(limit)
@@ -38,7 +38,7 @@ export async function fetchSongs(
 ): Promise<Song[]> {
 	const { data, error } = await supabase
 		.from('songs_public')
-		.select('id, title, artist, key, bpm, time_signature, language, genre, access_type, created_at')
+		.select('id, title, artist, text_chords, key, bpm, time_signature, language, genre, access_type, created_at')
 		.order('title')
 		.limit(limit)
 
