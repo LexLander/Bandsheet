@@ -26,7 +26,11 @@ type I18nImportPayload = {
     description?: string | null
     sourceText?: string | null
     enabled?: boolean
-    translations?: Record<string, string | { value?: string; enabled?: boolean; status?: 'draft' | 'published' | 'needs_review' }>
+    translations?: Record<
+      string,
+      | string
+      | { value?: string; enabled?: boolean; status?: 'draft' | 'published' | 'needs_review' }
+    >
   }>
 }
 
@@ -37,7 +41,14 @@ function deriveNamespace(varKey: string) {
 function parseSelectedVariableIds(raw: FormDataEntryValue | null) {
   const text = (raw as string | null)?.trim() ?? ''
   if (!text) return [] as string[]
-  return Array.from(new Set(text.split(',').map((id) => id.trim()).filter(Boolean)))
+  return Array.from(
+    new Set(
+      text
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean)
+    )
+  )
 }
 
 function normalizeAiProvider(raw: string | undefined) {
@@ -50,7 +61,7 @@ function isI18nAiDebugEnabled() {
 
 function aiDebugLog(...args: unknown[]) {
   if (isI18nAiDebugEnabled()) {
-    console.log(...args)
+    console.warn(...args)
   }
 }
 
@@ -149,7 +160,8 @@ async function translateWithOpenAI(
       messages: [
         {
           role: 'system',
-          content: 'Translate provided English phrases and return strict JSON object: {"key":"translation"}.',
+          content:
+            'Translate provided English phrases and return strict JSON object: {"key":"translation"}.',
         },
         {
           role: 'user',
@@ -225,9 +237,8 @@ export async function importI18nFromJson(formData: FormData) {
     const nativeName = (row.native_name ?? '').trim() || name
     if (!code || !name) continue
 
-    const { error } = await admin
-      .from('i18n_languages')
-      .upsert({
+    const { error } = await admin.from('i18n_languages').upsert(
+      {
         code,
         name,
         native_name: nativeName,
@@ -235,14 +246,18 @@ export async function importI18nFromJson(formData: FormData) {
         is_default: code === 'en',
         is_system: code === 'en',
         is_deleted: false,
-      }, { onConflict: 'code' })
+      },
+      { onConflict: 'code' }
+    )
 
     if (!error) languageCount += 1
   }
 
   for (const row of importedVariables) {
     const varKey = (row.key ?? '').trim().toLowerCase()
-    const sourceText = (row.sourceText ?? '').trim() || (typeof row.translations?.en === 'string' ? row.translations.en : '')
+    const sourceText =
+      (row.sourceText ?? '').trim() ||
+      (typeof row.translations?.en === 'string' ? row.translations.en : '')
     if (!varKey) continue
     if (!sourceText) continue
 
@@ -258,7 +273,7 @@ export async function importI18nFromJson(formData: FormData) {
           is_enabled: row.enabled ?? true,
           is_deleted: false,
         },
-        { onConflict: 'var_key' },
+        { onConflict: 'var_key' }
       )
       .select('id')
       .single()
@@ -274,27 +289,29 @@ export async function importI18nFromJson(formData: FormData) {
       const normalizedValue =
         typeof valueRaw === 'string'
           ? { value: valueRaw, enabled: true, status: 'published' as const }
-          : { value: valueRaw.value ?? '', enabled: valueRaw.enabled ?? true, status: valueRaw.status ?? 'published' }
+          : {
+              value: valueRaw.value ?? '',
+              enabled: valueRaw.enabled ?? true,
+              status: valueRaw.status ?? 'published',
+            }
 
       if (languageCode === 'en') {
         continue
       }
 
-      const { error } = await admin
-        .from('i18n_values')
-        .upsert(
-          {
-            variable_id: variable.id,
-            language_code: languageCode,
-            value: normalizedValue.value,
-            status: normalizedValue.status,
-            provider: 'import',
-            updated_by: actor.id,
-            is_enabled: normalizedValue.enabled,
-            is_deleted: false,
-          },
-          { onConflict: 'variable_id,language_code' },
-        )
+      const { error } = await admin.from('i18n_values').upsert(
+        {
+          variable_id: variable.id,
+          language_code: languageCode,
+          value: normalizedValue.value,
+          status: normalizedValue.status,
+          provider: 'import',
+          updated_by: actor.id,
+          is_enabled: normalizedValue.enabled,
+          is_deleted: false,
+        },
+        { onConflict: 'variable_id,language_code' }
+      )
 
       if (!error) valueCount += 1
     }
@@ -318,9 +335,8 @@ export async function createI18nLanguage(formData: FormData) {
   const nativeName = (formData.get('native_name') as string | null)?.trim() ?? name
   if (!code || !name) redirect('/admin/languages?error=language_required')
 
-  const { error } = await admin
-    .from('i18n_languages')
-    .upsert({
+  const { error } = await admin.from('i18n_languages').upsert(
+    {
       code,
       name,
       native_name: nativeName,
@@ -328,7 +344,9 @@ export async function createI18nLanguage(formData: FormData) {
       is_default: code === 'en',
       is_system: code === 'en',
       is_deleted: false,
-    }, { onConflict: 'code' })
+    },
+    { onConflict: 'code' }
+  )
 
   if (error) redirect('/admin/languages?error=language_create_failed')
 
@@ -344,9 +362,13 @@ export async function setI18nLanguageEnabled(formData: FormData) {
   const code = (formData.get('code') as string | null)?.trim().toLowerCase() ?? ''
   const enabled = normalizeFlag(formData.get('enabled'))
   if (!code) redirect(`/admin/languages?error=language_required&r=${refreshKey}`)
-  if (code === 'en' && !enabled) redirect(`/admin/languages?error=language_default_locked&r=${refreshKey}`)
+  if (code === 'en' && !enabled)
+    redirect(`/admin/languages?error=language_default_locked&r=${refreshKey}`)
 
-  const { error } = await admin.from('i18n_languages').update({ is_enabled: enabled }).eq('code', code)
+  const { error } = await admin
+    .from('i18n_languages')
+    .update({ is_enabled: enabled })
+    .eq('code', code)
   if (error) redirect(`/admin/languages?error=language_toggle_failed&r=${refreshKey}`)
 
   await writeI18nAudit(actor.id, 'i18n_language_toggled', { code, enabled })
@@ -373,15 +395,15 @@ export async function createI18nVariable(formData: FormData) {
   const { actor, admin } = await getAdminContext()
 
   const varKey = (formData.get('var_key') as string | null)?.trim().toLowerCase() ?? ''
-  const namespace = (formData.get('namespace') as string | null)?.trim().toLowerCase() || deriveNamespace(varKey)
+  const namespace =
+    (formData.get('namespace') as string | null)?.trim().toLowerCase() || deriveNamespace(varKey)
   const description = (formData.get('description') as string | null)?.trim() ?? null
   const sourceText = (formData.get('source_text') as string | null)?.trim() ?? ''
   if (!varKey) redirect('/admin/languages?error=variable_required')
   if (!sourceText) redirect('/admin/languages?error=variable_source_required')
 
-  const { error } = await admin
-    .from('i18n_variables')
-    .upsert({
+  const { error } = await admin.from('i18n_variables').upsert(
+    {
       var_key: varKey,
       namespace,
       description,
@@ -389,7 +411,9 @@ export async function createI18nVariable(formData: FormData) {
       source_text: sourceText,
       is_enabled: true,
       is_deleted: false,
-    }, { onConflict: 'var_key' })
+    },
+    { onConflict: 'var_key' }
+  )
 
   if (error) redirect('/admin/languages?error=variable_create_failed')
 
@@ -426,7 +450,10 @@ export async function setI18nVariableEnabled(formData: FormData) {
   const enabled = normalizeFlag(formData.get('enabled'))
   if (!variableId) redirect('/admin/languages?error=variable_required')
 
-  const { error } = await admin.from('i18n_variables').update({ is_enabled: enabled }).eq('id', variableId)
+  const { error } = await admin
+    .from('i18n_variables')
+    .update({ is_enabled: enabled })
+    .eq('id', variableId)
   if (error) redirect('/admin/languages?error=variable_toggle_failed')
 
   await writeI18nAudit(actor.id, 'i18n_variable_toggled', { variable_id: variableId, enabled })
@@ -454,7 +481,10 @@ export async function saveI18nTranslationValue(formData: FormData) {
   const variableId = (formData.get('variable_id') as string | null)?.trim() ?? ''
   const languageCode = (formData.get('language_code') as string | null)?.trim().toLowerCase() ?? ''
   const value = (formData.get('value') as string | null) ?? ''
-  const status = ((formData.get('status') as string | null)?.trim() ?? 'published') as 'draft' | 'published' | 'needs_review'
+  const status = ((formData.get('status') as string | null)?.trim() ?? 'published') as
+    | 'draft'
+    | 'published'
+    | 'needs_review'
   if (!variableId || !languageCode) redirect('/admin/languages?error=value_required')
   if (languageCode === 'en') redirect('/admin/languages?error=value_required')
 
@@ -469,12 +499,16 @@ export async function saveI18nTranslationValue(formData: FormData) {
       is_enabled: true,
       is_deleted: false,
     },
-    { onConflict: 'variable_id,language_code' },
+    { onConflict: 'variable_id,language_code' }
   )
 
   if (error) redirect('/admin/languages?error=value_save_failed')
 
-  await writeI18nAudit(actor.id, 'i18n_value_saved', { variable_id: variableId, language_code: languageCode, status })
+  await writeI18nAudit(actor.id, 'i18n_value_saved', {
+    variable_id: variableId,
+    language_code: languageCode,
+    status,
+  })
   revalidatePath('/admin/languages')
   redirect('/admin/languages?success=value_saved')
 }
@@ -486,7 +520,10 @@ export async function setI18nTranslationEnabled(formData: FormData) {
   const enabled = normalizeFlag(formData.get('enabled'))
   if (!valueId) redirect('/admin/languages?error=value_required')
 
-  const { error } = await admin.from('i18n_values').update({ is_enabled: enabled }).eq('id', valueId)
+  const { error } = await admin
+    .from('i18n_values')
+    .update({ is_enabled: enabled })
+    .eq('id', valueId)
   if (error) redirect('/admin/languages?error=value_toggle_failed')
 
   await writeI18nAudit(actor.id, 'i18n_value_toggled', { value_id: valueId, enabled })
@@ -515,7 +552,8 @@ export async function bulkSetI18nTranslationsEnabled(formData: FormData) {
   const languageCode = (formData.get('language_code') as string | null)?.trim().toLowerCase() ?? ''
   const enabled = normalizeFlag(formData.get('enabled'))
 
-  if (!languageCode || languageCode === 'en') redirect('/admin/languages?error=bulk_language_required')
+  if (!languageCode || languageCode === 'en')
+    redirect('/admin/languages?error=bulk_language_required')
   if (!variableIds.length) redirect('/admin/languages?error=bulk_selection_required')
 
   const { error } = await admin
@@ -542,7 +580,8 @@ export async function bulkDeleteI18nTranslations(formData: FormData) {
   const variableIds = parseSelectedVariableIds(formData.get('selected_variable_ids'))
   const languageCode = (formData.get('language_code') as string | null)?.trim().toLowerCase() ?? ''
 
-  if (!languageCode || languageCode === 'en') redirect('/admin/languages?error=bulk_language_required')
+  if (!languageCode || languageCode === 'en')
+    redirect('/admin/languages?error=bulk_language_required')
   if (!variableIds.length) redirect('/admin/languages?error=bulk_selection_required')
 
   const { error } = await admin
@@ -567,11 +606,12 @@ export async function bulkGenerateI18nTranslations(formData: FormData) {
 
   const variableIds = parseSelectedVariableIds(formData.get('selected_variable_ids'))
   const languageCode = (formData.get('language_code') as string | null)?.trim().toLowerCase() ?? ''
-  const translateModeRaw = (formData.get('mode') as string | null)
-    ?? (formData.get('translate_mode') as string | null)
+  const translateModeRaw =
+    (formData.get('mode') as string | null) ?? (formData.get('translate_mode') as string | null)
   const translateMode = (translateModeRaw ?? '').trim().toLowerCase() === 'empty' ? 'empty' : 'all'
 
-  if (!languageCode || languageCode === 'en') redirect('/admin/languages?error=bulk_language_required')
+  if (!languageCode || languageCode === 'en')
+    redirect('/admin/languages?error=bulk_language_required')
 
   let effectiveVariableIds = variableIds
   if (!effectiveVariableIds.length) {
@@ -581,7 +621,9 @@ export async function bulkGenerateI18nTranslations(formData: FormData) {
       .eq('is_enabled', true)
       .eq('is_deleted', false)
 
-    effectiveVariableIds = ((allEnabledVariables ?? []) as Array<{ id: string }>).map((row) => row.id)
+    effectiveVariableIds = ((allEnabledVariables ?? []) as Array<{ id: string }>).map(
+      (row) => row.id
+    )
   }
 
   if (!effectiveVariableIds.length) redirect('/admin/languages?error=bulk_selection_required')
@@ -600,7 +642,11 @@ export async function bulkGenerateI18nTranslations(formData: FormData) {
     .eq('is_deleted', false)
     .order('var_key', { ascending: true })
 
-  const variableRows = (variables ?? []) as Array<{ id: string; var_key: string; source_text: string }>
+  const variableRows = (variables ?? []) as Array<{
+    id: string
+    var_key: string
+    source_text: string
+  }>
 
   let targetVariables = variableRows
   if (translateMode === 'empty') {
@@ -639,16 +685,19 @@ export async function bulkGenerateI18nTranslations(formData: FormData) {
     const value = valueMap.get(variable.var_key)
     if (!value) continue
 
-    const { error } = await admin.from('i18n_values').upsert({
-      variable_id: variable.id,
-      language_code: languageCode,
-      value,
-      status: 'published',
-      provider: drafts.provider,
-      updated_by: actor.id,
-      is_enabled: true,
-      is_deleted: false,
-    }, { onConflict: 'variable_id,language_code' })
+    const { error } = await admin.from('i18n_values').upsert(
+      {
+        variable_id: variable.id,
+        language_code: languageCode,
+        value,
+        status: 'published',
+        provider: drafts.provider,
+        updated_by: actor.id,
+        is_enabled: true,
+        is_deleted: false,
+      },
+      { onConflict: 'variable_id,language_code' }
+    )
 
     if (!error) generated += 1
   }
@@ -671,32 +720,59 @@ export async function bootstrapBuiltInI18nCatalog() {
   const catalog = getBuiltInCatalog()
 
   const builtInLanguages = [
-    { code: 'en', name: 'English', native_name: 'English', is_default: true, is_system: true, sort_order: 0 },
-    { code: 'uk', name: 'Ukrainian', native_name: translations.uk.lang.uk, is_default: false, is_system: false, sort_order: 10 },
-    { code: 'ru', name: 'Russian', native_name: translations.ru.lang.ru, is_default: false, is_system: false, sort_order: 20 },
+    {
+      code: 'en',
+      name: 'English',
+      native_name: 'English',
+      is_default: true,
+      is_system: true,
+      sort_order: 0,
+    },
+    {
+      code: 'uk',
+      name: 'Ukrainian',
+      native_name: translations.uk.lang.uk,
+      is_default: false,
+      is_system: false,
+      sort_order: 10,
+    },
+    {
+      code: 'ru',
+      name: 'Russian',
+      native_name: translations.ru.lang.ru,
+      is_default: false,
+      is_system: false,
+      sort_order: 20,
+    },
   ]
 
   for (const language of builtInLanguages) {
-    await admin.from('i18n_languages').upsert({
-      ...language,
-      is_enabled: true,
-      is_deleted: false,
-    }, { onConflict: 'code' })
+    await admin.from('i18n_languages').upsert(
+      {
+        ...language,
+        is_enabled: true,
+        is_deleted: false,
+      },
+      { onConflict: 'code' }
+    )
   }
 
   let valueCount = 0
   for (const entry of catalog) {
     const { data: variable, error } = await admin
       .from('i18n_variables')
-      .upsert({
-        var_key: entry.key,
-        namespace: entry.namespace,
-        source_language_code: 'en',
-        source_text: entry.sourceText,
-        description: null,
-        is_enabled: true,
-        is_deleted: false,
-      }, { onConflict: 'var_key' })
+      .upsert(
+        {
+          var_key: entry.key,
+          namespace: entry.namespace,
+          source_language_code: 'en',
+          source_text: entry.sourceText,
+          description: null,
+          is_enabled: true,
+          is_deleted: false,
+        },
+        { onConflict: 'var_key' }
+      )
       .select('id')
       .single()
 
@@ -704,16 +780,19 @@ export async function bootstrapBuiltInI18nCatalog() {
 
     for (const [languageCode, value] of Object.entries(entry.translations)) {
       if (languageCode === 'en' || !value) continue
-      const { error: valueError } = await admin.from('i18n_values').upsert({
-        variable_id: variable.id,
-        language_code: languageCode,
-        value,
-        status: 'published',
-        provider: 'builtin',
-        updated_by: actor.id,
-        is_enabled: true,
-        is_deleted: false,
-      }, { onConflict: 'variable_id,language_code' })
+      const { error: valueError } = await admin.from('i18n_values').upsert(
+        {
+          variable_id: variable.id,
+          language_code: languageCode,
+          value,
+          status: 'published',
+          provider: 'builtin',
+          updated_by: actor.id,
+          is_enabled: true,
+          is_deleted: false,
+        },
+        { onConflict: 'variable_id,language_code' }
+      )
 
       if (!valueError) valueCount += 1
     }
@@ -741,7 +820,10 @@ export async function generateI18nDraftTranslations(formData: FormData) {
     .eq('is_deleted', false)
     .order('var_key', { ascending: true })
 
-  const requests = (variables ?? []).map((row) => ({ key: row.var_key, sourceText: row.source_text }))
+  const requests = (variables ?? []).map((row) => ({
+    key: row.var_key,
+    sourceText: row.source_text,
+  }))
 
   let drafts
   try {
@@ -756,16 +838,19 @@ export async function generateI18nDraftTranslations(formData: FormData) {
   for (const variable of (variables ?? []) as Array<{ id: string; var_key: string }>) {
     const value = valueMap.get(variable.var_key)
     if (!value) continue
-    const { error } = await admin.from('i18n_values').upsert({
-      variable_id: variable.id,
-      language_code: languageCode,
-      value,
-      status: 'needs_review',
-      provider: drafts.provider,
-      updated_by: actor.id,
-      is_enabled: true,
-      is_deleted: false,
-    }, { onConflict: 'variable_id,language_code' })
+    const { error } = await admin.from('i18n_values').upsert(
+      {
+        variable_id: variable.id,
+        language_code: languageCode,
+        value,
+        status: 'needs_review',
+        provider: drafts.provider,
+        updated_by: actor.id,
+        is_enabled: true,
+        is_deleted: false,
+      },
+      { onConflict: 'variable_id,language_code' }
+    )
 
     if (!error) generated += 1
   }

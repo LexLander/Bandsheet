@@ -12,19 +12,32 @@ type InviteProfile = {
   avatar_url: string | null
 }
 
-export default function InviteForm({
-  groupId,
-  profiles,
-}: {
+type InviteFormProps = {
   groupId: string
   profiles: InviteProfile[]
-}) {
-  const { t } = useLanguage()
-  const roles = [
+}
+
+function buildRoleOptions(t: ReturnType<typeof useLanguage>['t']) {
+  return [
     { value: 'member', label: t.groups.roles.member },
     { value: 'switcher', label: t.groups.roles.switcher },
     { value: 'deputy', label: t.groups.roles.deputy },
   ]
+}
+
+function filterProfiles(profiles: InviteProfile[], query: string) {
+  return profiles
+    .filter((profile) => profile.email)
+    .filter((profile) => {
+      const haystack = `${profile.name ?? ''} ${profile.email ?? ''}`.toLowerCase()
+      return haystack.includes(query.toLowerCase())
+    })
+    .slice(0, 8)
+}
+
+export default function InviteForm({ groupId, profiles }: InviteFormProps) {
+  const { t } = useLanguage()
+  const roles = buildRoleOptions(t)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -54,13 +67,7 @@ export default function InviteForm({
     setLoading(false)
   }
 
-  const filteredProfiles = profiles
-    .filter((p) => p.email)
-    .filter((p) => {
-      const haystack = `${p.name ?? ''} ${p.email ?? ''}`.toLowerCase()
-      return haystack.includes(query.toLowerCase())
-    })
-    .slice(0, 8)
+  const filteredProfiles = filterProfiles(profiles, query)
 
   useEffect(() => {
     function handleInvitationCancelled() {

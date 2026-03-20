@@ -19,6 +19,10 @@ type DbValue = {
   value: string
 }
 
+function writeJsonReport(payload: unknown) {
+  process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`)
+}
+
 function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = []
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
@@ -38,16 +42,10 @@ function hasUsableSupabaseAuditEnv() {
 
 async function main() {
   if (!hasUsableSupabaseAuditEnv()) {
-    console.log(
-      JSON.stringify(
-        {
-          skipped: true,
-          reason: 'supabase_audit_env_not_configured',
-        },
-        null,
-        2
-      )
-    )
+    writeJsonReport({
+      skipped: true,
+      reason: 'supabase_audit_env_not_configured',
+    })
     return
   }
 
@@ -57,12 +55,41 @@ async function main() {
   const keyFormat = /^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+$/
 
   const languageRows = [
-    { code: 'en', name: 'English', native_name: 'English', is_enabled: true, is_default: true, is_system: true, sort_order: 0, is_deleted: false },
-    { code: 'uk', name: 'Ukrainian', native_name: 'Українська', is_enabled: true, is_default: false, is_system: false, sort_order: 10, is_deleted: false },
-    { code: 'ru', name: 'Russian', native_name: 'Русский', is_enabled: true, is_default: false, is_system: false, sort_order: 20, is_deleted: false },
+    {
+      code: 'en',
+      name: 'English',
+      native_name: 'English',
+      is_enabled: true,
+      is_default: true,
+      is_system: true,
+      sort_order: 0,
+      is_deleted: false,
+    },
+    {
+      code: 'uk',
+      name: 'Ukrainian',
+      native_name: 'Українська',
+      is_enabled: true,
+      is_default: false,
+      is_system: false,
+      sort_order: 10,
+      is_deleted: false,
+    },
+    {
+      code: 'ru',
+      name: 'Russian',
+      native_name: 'Русский',
+      is_enabled: true,
+      is_default: false,
+      is_system: false,
+      sort_order: 20,
+      is_deleted: false,
+    },
   ]
 
-  const { error: langError } = await admin.from('i18n_languages').upsert(languageRows, { onConflict: 'code' })
+  const { error: langError } = await admin
+    .from('i18n_languages')
+    .upsert(languageRows, { onConflict: 'code' })
   if (langError) throw new Error(`LANG_UPSERT_ERROR: ${langError.message}`)
 
   const invalidByConstraint = catalog
@@ -92,7 +119,10 @@ async function main() {
   const keyToId = new Map<string, string>()
 
   for (const keysPart of chunk(allKeys, 200)) {
-    const { data, error } = await admin.from('i18n_variables').select('id,var_key').in('var_key', keysPart)
+    const { data, error } = await admin
+      .from('i18n_variables')
+      .select('id,var_key')
+      .in('var_key', keysPart)
     if (error) throw new Error(`VAR_FETCH_ERROR: ${error.message}`)
 
     for (const row of (data ?? []) as Array<{ id: string; var_key: string }>) {
@@ -133,7 +163,9 @@ async function main() {
   }
 
   for (const part of chunk(valueRows, 300)) {
-    const { error } = await admin.from('i18n_values').upsert(part, { onConflict: 'variable_id,language_code' })
+    const { error } = await admin
+      .from('i18n_values')
+      .upsert(part, { onConflict: 'variable_id,language_code' })
     if (error) throw new Error(`VALUE_UPSERT_ERROR: ${error.message}`)
   }
 
@@ -192,28 +224,22 @@ async function main() {
   missingRu.sort()
   missingUk.sort()
 
-  console.log(
-    JSON.stringify(
-      {
-        builtInKeys: catalog.length,
-        blockedByDbConstraintCount: invalidByConstraint.length,
-        blockedByDbConstraintSample: invalidByConstraint.slice(0, 20),
-        validForCurrentConstraint: validCatalog.length,
-        dbVariablesForBuiltIn: varRows.length,
-        dbValuesUpsertedRUUK: valueRows.length,
-        missingKeysCount: missingKeys.length,
-        missingEnCount: missingEn.length,
-        missingRuCount: missingRu.length,
-        missingUkCount: missingUk.length,
-        sampleMissingKeys: missingKeys.slice(0, 20),
-        sampleMissingEn: missingEn.slice(0, 20),
-        sampleMissingRu: missingRu.slice(0, 20),
-        sampleMissingUk: missingUk.slice(0, 20),
-      },
-      null,
-      2
-    )
-  )
+  writeJsonReport({
+    builtInKeys: catalog.length,
+    blockedByDbConstraintCount: invalidByConstraint.length,
+    blockedByDbConstraintSample: invalidByConstraint.slice(0, 20),
+    validForCurrentConstraint: validCatalog.length,
+    dbVariablesForBuiltIn: varRows.length,
+    dbValuesUpsertedRUUK: valueRows.length,
+    missingKeysCount: missingKeys.length,
+    missingEnCount: missingEn.length,
+    missingRuCount: missingRu.length,
+    missingUkCount: missingUk.length,
+    sampleMissingKeys: missingKeys.slice(0, 20),
+    sampleMissingEn: missingEn.slice(0, 20),
+    sampleMissingRu: missingRu.slice(0, 20),
+    sampleMissingUk: missingUk.slice(0, 20),
+  })
 }
 
 main().catch((error) => {

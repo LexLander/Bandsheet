@@ -13,7 +13,9 @@ const {
   revalidatePathMock: vi.fn(),
   getAdminContextMock: vi.fn(),
   writeI18nAuditMock: vi.fn(),
-  normalizeFlagMock: vi.fn((value: FormDataEntryValue | null) => String(value ?? '').toLowerCase() === 'true'),
+  normalizeFlagMock: vi.fn(
+    (value: FormDataEntryValue | null) => String(value ?? '').toLowerCase() === 'true'
+  ),
 }))
 
 vi.mock('next/navigation', () => ({
@@ -30,13 +32,13 @@ vi.mock('@/app/admin/actions/_helpers', () => ({
   normalizeFlag: normalizeFlagMock,
 }))
 
-import { setI18nLanguageEnabled } from '@/app/admin/actions/i18n'
 import {
   bulkDeleteI18nTranslations,
   bulkSetI18nTranslationsEnabled,
   createI18nLanguage,
   deleteI18nLanguage,
   importI18nFromJson,
+  setI18nLanguageEnabled,
 } from '@/app/admin/actions/i18n'
 
 type AdminMock = {
@@ -66,7 +68,7 @@ describe('setI18nLanguageEnabled action', () => {
     formData.set('enabled', 'true')
 
     await expect(setI18nLanguageEnabled(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?error=language_required&r=123456',
+      'REDIRECT:/admin/languages?error=language_required&r=123456'
     )
 
     expect(admin.from).not.toHaveBeenCalled()
@@ -82,7 +84,7 @@ describe('setI18nLanguageEnabled action', () => {
     formData.set('enabled', 'false')
 
     await expect(setI18nLanguageEnabled(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?error=language_toggle_failed&r=123456',
+      'REDIRECT:/admin/languages?error=language_toggle_failed&r=123456'
     )
 
     expect(admin.from).toHaveBeenCalledWith('i18n_languages')
@@ -99,7 +101,7 @@ describe('setI18nLanguageEnabled action', () => {
     formData.set('enabled', 'true')
 
     await expect(setI18nLanguageEnabled(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?success=language_toggled&r=123456',
+      'REDIRECT:/admin/languages?success=language_toggled&r=123456'
     )
 
     expect(writeI18nAuditMock).toHaveBeenCalledWith('actor-1', 'i18n_language_toggled', {
@@ -125,7 +127,7 @@ describe('other i18n admin actions', () => {
     formData.set('name', '')
 
     await expect(createI18nLanguage(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?error=language_required',
+      'REDIRECT:/admin/languages?error=language_required'
     )
     expect(upsert).not.toHaveBeenCalled()
   })
@@ -140,7 +142,7 @@ describe('other i18n admin actions', () => {
     formData.set('name', 'Deutsch')
 
     await expect(createI18nLanguage(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?success=language_saved',
+      'REDIRECT:/admin/languages?success=language_saved'
     )
 
     expect(upsert).toHaveBeenCalledWith(
@@ -153,7 +155,7 @@ describe('other i18n admin actions', () => {
         is_system: false,
         is_deleted: false,
       },
-      { onConflict: 'code' },
+      { onConflict: 'code' }
     )
     expect(writeI18nAuditMock).toHaveBeenCalledWith('actor-2', 'i18n_language_saved', {
       code: 'de',
@@ -171,7 +173,7 @@ describe('other i18n admin actions', () => {
     formData.set('enabled', 'false')
 
     await expect(setI18nLanguageEnabled(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?error=language_default_locked&r=123456',
+      'REDIRECT:/admin/languages?error=language_default_locked&r=123456'
     )
   })
 
@@ -185,11 +187,13 @@ describe('other i18n admin actions', () => {
     formData.set('code', 'ru')
 
     await expect(deleteI18nLanguage(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?success=language_deleted',
+      'REDIRECT:/admin/languages?success=language_deleted'
     )
 
     expect(eq).toHaveBeenCalledWith('code', 'ru')
-    expect(writeI18nAuditMock).toHaveBeenCalledWith('actor-3', 'i18n_language_deleted', { code: 'ru' })
+    expect(writeI18nAuditMock).toHaveBeenCalledWith('actor-3', 'i18n_language_deleted', {
+      code: 'ru',
+    })
   })
 
   it('importI18nFromJson rejects invalid json payload', async () => {
@@ -200,7 +204,7 @@ describe('other i18n admin actions', () => {
     formData.set('payload', '{broken-json')
 
     await expect(importI18nFromJson(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?error=import_invalid_json',
+      'REDIRECT:/admin/languages?error=import_invalid_json'
     )
   })
 
@@ -221,19 +225,24 @@ describe('other i18n admin actions', () => {
     getAdminContextMock.mockResolvedValue({ actor: { id: 'actor-4' }, admin })
 
     const formData = new FormData()
-    formData.set('payload', JSON.stringify({
-      languages: [{ code: 'de', name: 'Deutsch', enabled: true }],
-      variables: [{
-        key: 'app.nav.users',
-        description: 'Users menu label',
-        sourceText: 'Users',
-        enabled: true,
-        translations: { de: 'Benutzer' },
-      }],
-    }))
+    formData.set(
+      'payload',
+      JSON.stringify({
+        languages: [{ code: 'de', name: 'Deutsch', enabled: true }],
+        variables: [
+          {
+            key: 'app.nav.users',
+            description: 'Users menu label',
+            sourceText: 'Users',
+            enabled: true,
+            translations: { de: 'Benutzer' },
+          },
+        ],
+      })
+    )
 
     await expect(importI18nFromJson(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?success=import_done',
+      'REDIRECT:/admin/languages?success=import_done'
     )
 
     expect(langUpsert).toHaveBeenCalled()
@@ -254,7 +263,7 @@ describe('other i18n admin actions', () => {
     formData.set('language_code', 'uk')
 
     await expect(bulkSetI18nTranslationsEnabled(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?error=bulk_selection_required',
+      'REDIRECT:/admin/languages?error=bulk_selection_required'
     )
   })
 
@@ -277,7 +286,7 @@ describe('other i18n admin actions', () => {
     formData.set('language_code', 'ru')
 
     await expect(bulkDeleteI18nTranslations(formData)).rejects.toThrow(
-      'REDIRECT:/admin/languages?success=values_bulk_deleted',
+      'REDIRECT:/admin/languages?success=values_bulk_deleted'
     )
 
     expect(del).toHaveBeenCalled()
