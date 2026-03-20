@@ -5,10 +5,11 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 type Props = {
   placeholder: string
+  submitLabel: string
   initialQuery: string
 }
 
-export default function LibrarySearchClient({ placeholder, initialQuery }: Props) {
+export default function LibrarySearchClient({ placeholder, submitLabel, initialQuery }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -42,7 +43,7 @@ export default function LibrarySearchClient({ placeholder, initialQuery }: Props
         type="submit"
         className="px-4 py-2 rounded-lg bg-foreground text-background text-sm font-medium"
       >
-        Search
+        {submitLabel}
       </button>
     </form>
   )

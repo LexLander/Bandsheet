@@ -40,6 +40,7 @@ export default async function LibraryPage({
       <section className="rounded-2xl border border-black/10 dark:border-white/10 p-4 space-y-4">
         <LibrarySearchClient
           placeholder={t.library.searchPlaceholder}
+          submitLabel={t.library.searchButton}
           initialQuery={q}
         />
 
@@ -66,6 +67,8 @@ export default async function LibraryPage({
                         isAdded={inLibrary}
                         addLabel={t.library.addToLibrary}
                         addedLabel={t.library.added}
+                        pendingLabel={t.library.adding}
+                        errorLabel={t.library.addFailed}
                       />
                     </div>
                   )
@@ -102,6 +105,8 @@ export default async function LibraryPage({
                 <RemoveFromLibraryButton
                   itemId={item.id}
                   removeLabel={t.library.remove}
+                  pendingLabel={t.library.removing}
+                  errorLabel={t.library.removeFailed}
                 />
               </div>
             ))}

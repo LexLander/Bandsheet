@@ -9,11 +9,15 @@ type AddProps = {
   isAdded: boolean
   addLabel: string
   addedLabel: string
+  pendingLabel: string
+  errorLabel: string
 }
 
 type RemoveProps = {
   itemId: string
   removeLabel: string
+  pendingLabel: string
+  errorLabel: string
 }
 
 export function AddToLibraryButton({
@@ -22,6 +26,8 @@ export function AddToLibraryButton({
   isAdded,
   addLabel,
   addedLabel,
+  pendingLabel,
+  errorLabel,
 }: AddProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -38,7 +44,7 @@ export function AddToLibraryButton({
     setLoading(false)
 
     if (!response.ok) {
-      window.alert('Failed to add song')
+      window.alert(errorLabel)
       return
     }
 
@@ -52,12 +58,17 @@ export function AddToLibraryButton({
       onClick={onAdd}
       className="px-3 py-1.5 rounded-lg border border-black/15 dark:border-white/15 text-xs disabled:opacity-60"
     >
-      {isAdded ? addedLabel : addLabel}
+      {loading ? pendingLabel : isAdded ? addedLabel : addLabel}
     </button>
   )
 }
 
-export function RemoveFromLibraryButton({ itemId, removeLabel }: RemoveProps) {
+export function RemoveFromLibraryButton({
+  itemId,
+  removeLabel,
+  pendingLabel,
+  errorLabel,
+}: RemoveProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -69,7 +80,7 @@ export function RemoveFromLibraryButton({ itemId, removeLabel }: RemoveProps) {
     setLoading(false)
 
     if (!response.ok) {
-      window.alert('Failed to remove song')
+      window.alert(errorLabel)
       return
     }
 
@@ -83,7 +94,7 @@ export function RemoveFromLibraryButton({ itemId, removeLabel }: RemoveProps) {
       onClick={onRemove}
       className="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 disabled:opacity-60"
     >
-      {removeLabel}
+      {loading ? pendingLabel : removeLabel}
     </button>
   )
 }

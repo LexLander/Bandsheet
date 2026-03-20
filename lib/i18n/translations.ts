@@ -53,11 +53,16 @@ type TranslationTree = {
   library: {
     title: string
     searchPlaceholder: string
+    searchButton: string
     searchResults: string
     noResults: string
     addToLibrary: string
     added: string
+    adding: string
     remove: string
+    removing: string
+    addFailed: string
+    removeFailed: string
     myLibrary: string
     empty: string
     emptyHint: string
@@ -420,11 +425,16 @@ export const translations: Record<StaticLocale, TranslationTree> = {
     library: {
       title: 'Бібліотека',
       searchPlaceholder: 'Пошук пісень за назвою або виконавцем...',
+      searchButton: 'Пошук',
       searchResults: 'Результати пошуку',
       noResults: 'Нічого не знайдено',
       addToLibrary: 'Додати',
       added: 'Вже є',
+      adding: 'Додаю...',
       remove: 'Видалити',
+      removing: 'Видаляю...',
+      addFailed: 'Не вдалося додати пісню',
+      removeFailed: 'Не вдалося видалити пісню',
       myLibrary: 'Моя бібліотека',
       empty: 'Бібліотека порожня',
       emptyHint: 'Додайте пісні через пошук вище.',
@@ -785,11 +795,16 @@ export const translations: Record<StaticLocale, TranslationTree> = {
     library: {
       title: 'Библиотека',
       searchPlaceholder: 'Поиск песен по названию или исполнителю...',
+      searchButton: 'Поиск',
       searchResults: 'Результаты поиска',
       noResults: 'Ничего не найдено',
       addToLibrary: 'Добавить',
       added: 'Уже есть',
+      adding: 'Добавляю...',
       remove: 'Удалить',
+      removing: 'Удаляю...',
+      addFailed: 'Не удалось добавить песню',
+      removeFailed: 'Не удалось удалить песню',
       myLibrary: 'Моя библиотека',
       empty: 'Библиотека пустая',
       emptyHint: 'Добавьте песни через поиск выше.',
@@ -1150,11 +1165,16 @@ export const translations: Record<StaticLocale, TranslationTree> = {
     library: {
       title: 'Library',
       searchPlaceholder: 'Search songs by title or artist...',
+      searchButton: 'Search',
       searchResults: 'Search results',
       noResults: 'No results found',
       addToLibrary: 'Add',
       added: 'Added',
+      adding: 'Adding...',
       remove: 'Remove',
+      removing: 'Removing...',
+      addFailed: 'Failed to add song',
+      removeFailed: 'Failed to remove song',
       myLibrary: 'My library',
       empty: 'Library is empty',
       emptyHint: 'Add songs using search above.',
