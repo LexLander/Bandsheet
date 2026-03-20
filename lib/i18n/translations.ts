@@ -50,6 +50,20 @@ type TranslationTree = {
     active: string
     groups: (n: number) => string
   }
+  library: {
+    title: string
+    searchPlaceholder: string
+    searchResults: string
+    noResults: string
+    addToLibrary: string
+    added: string
+    remove: string
+    myLibrary: string
+    empty: string
+    emptyHint: string
+    songKey: string
+    songBpm: string
+  }
   profile: {
     title: string
     subtitle: string
@@ -403,6 +417,20 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       active: 'Активна',
       groups: (n) => `${n} груп`,
     },
+    library: {
+      title: 'Бібліотека',
+      searchPlaceholder: 'Пошук пісень за назвою або виконавцем...',
+      searchResults: 'Результати пошуку',
+      noResults: 'Нічого не знайдено',
+      addToLibrary: 'Додати',
+      added: 'Вже є',
+      remove: 'Видалити',
+      myLibrary: 'Моя бібліотека',
+      empty: 'Бібліотека порожня',
+      emptyHint: 'Додайте пісні через пошук вище.',
+      songKey: 'Тональність',
+      songBpm: 'BPM',
+    },
     profile: {
       title: 'Профіль',
       subtitle: 'Редагуйте вашу основну інформацію та налаштування інтерфейсу.',
@@ -754,6 +782,20 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       active: 'Активно',
       groups: (n) => `${n} групп`,
     },
+    library: {
+      title: 'Библиотека',
+      searchPlaceholder: 'Поиск песен по названию или исполнителю...',
+      searchResults: 'Результаты поиска',
+      noResults: 'Ничего не найдено',
+      addToLibrary: 'Добавить',
+      added: 'Уже есть',
+      remove: 'Удалить',
+      myLibrary: 'Моя библиотека',
+      empty: 'Библиотека пустая',
+      emptyHint: 'Добавьте песни через поиск выше.',
+      songKey: 'Тональность',
+      songBpm: 'BPM',
+    },
     profile: {
       title: 'Профиль',
       subtitle: 'Редактируйте вашу основную информацию и настройки интерфейса.',
@@ -1104,6 +1146,20 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       createGroup: 'Create a group →',
       active: 'Active',
       groups: (n) => `${n} groups`,
+    },
+    library: {
+      title: 'Library',
+      searchPlaceholder: 'Search songs by title or artist...',
+      searchResults: 'Search results',
+      noResults: 'No results found',
+      addToLibrary: 'Add',
+      added: 'Added',
+      remove: 'Remove',
+      myLibrary: 'My library',
+      empty: 'Library is empty',
+      emptyHint: 'Add songs using search above.',
+      songKey: 'Key',
+      songBpm: 'BPM',
     },
     profile: {
       title: 'Profile',

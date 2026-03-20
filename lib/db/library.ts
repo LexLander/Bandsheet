@@ -22,7 +22,7 @@ export async function fetchLibraryItems(
 ): Promise<LibraryItem[]> {
   const { data, error } = await supabase
     .from('library_items')
-    .select('*, song:songs_public(id, title, artist, key, bpm, time_signature, language, genre, access_type, created_at)')
+    .select('*, song:songs_public(id, title, artist, text_chords, key, bpm, time_signature, language, genre, access_type, created_at)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
 
