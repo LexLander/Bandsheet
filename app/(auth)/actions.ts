@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { fetchProfileById } from '@/lib/db/profiles'
+import { sanitizeEmail, sanitizeRequiredText } from '@/lib/validation/sanitize'
 
 const errorMessages: Record<string, string> = {
   'Invalid login credentials': 'Невірний email або пароль',
@@ -28,14 +29,6 @@ function sanitizeNextPath(value: string | null | undefined): string | null {
   return trimmed
 }
 
-function sanitizeEmail(value: FormDataEntryValue | null) {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
-function sanitizeRequiredText(value: FormDataEntryValue | null) {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
 async function getAppOrigin() {
   const h = await headers()
   const origin = h.get('origin')?.trim()
@@ -45,11 +38,13 @@ async function getAppOrigin() {
 
   const host = h.get('x-forwarded-host')?.trim() || h.get('host')?.trim()
   if (host) {
-    const proto = h.get('x-forwarded-proto')?.trim() || (host.includes('localhost') ? 'http' : 'https')
+    const proto =
+      h.get('x-forwarded-proto')?.trim() || (host.includes('localhost') ? 'http' : 'https')
     return `${proto}://${host}`
   }
 
-  const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() || process.env.VERCEL_URL?.trim()
+  const vercelUrl =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() || process.env.VERCEL_URL?.trim()
   if (vercelUrl) {
     return `https://${vercelUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}`
   }
@@ -78,7 +73,9 @@ export async function login(formData: FormData) {
     return { error: translateError(error.message) }
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (user) {
     const { data: profile } = await fetchProfileById(supabase, user.id)
 

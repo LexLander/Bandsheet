@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { inviteMember } from '../actions'
 import { useLanguage } from '@/components/i18n/LanguageProvider'
+import { GROUP_INVITATION_CANCELLED_EVENT } from '@/lib/events/groups'
 
 type InviteProfile = {
   id: string
@@ -12,7 +12,13 @@ type InviteProfile = {
   avatar_url: string | null
 }
 
-export default function InviteForm({ groupId, profiles }: { groupId: string; profiles: InviteProfile[] }) {
+export default function InviteForm({
+  groupId,
+  profiles,
+}: {
+  groupId: string
+  profiles: InviteProfile[]
+}) {
   const { t } = useLanguage()
   const roles = [
     { value: 'member', label: t.groups.roles.member },
@@ -49,7 +55,7 @@ export default function InviteForm({ groupId, profiles }: { groupId: string; pro
   }
 
   const filteredProfiles = profiles
-    .filter(p => p.email)
+    .filter((p) => p.email)
     .filter((p) => {
       const haystack = `${p.name ?? ''} ${p.email ?? ''}`.toLowerCase()
       return haystack.includes(query.toLowerCase())
@@ -61,9 +67,9 @@ export default function InviteForm({ groupId, profiles }: { groupId: string; pro
       setSuccess(false)
     }
 
-    window.addEventListener('group:invitation-cancelled', handleInvitationCancelled)
+    window.addEventListener(GROUP_INVITATION_CANCELLED_EVENT, handleInvitationCancelled)
     return () => {
-      window.removeEventListener('group:invitation-cancelled', handleInvitationCancelled)
+      window.removeEventListener(GROUP_INVITATION_CANCELLED_EVENT, handleInvitationCancelled)
     }
   }, [])
 
@@ -99,7 +105,9 @@ export default function InviteForm({ groupId, profiles }: { groupId: string; pro
                   }}
                   className="w-full text-left px-3 py-2 hover:bg-black/5 dark:hover:bg-white/5 transition"
                 >
-                  <div className="text-sm font-medium">{profile.name ?? t.groups.invite.noName}</div>
+                  <div className="text-sm font-medium">
+                    {profile.name ?? t.groups.invite.noName}
+                  </div>
                   <div className="text-xs text-foreground/60">{profile.email}</div>
                 </button>
               ))}
@@ -110,8 +118,10 @@ export default function InviteForm({ groupId, profiles }: { groupId: string; pro
           name="role"
           className="px-3 py-2 rounded-lg border border-black/15 dark:border-white/15 bg-background text-sm outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 transition"
         >
-          {roles.map(r => (
-            <option key={r.value} value={r.value}>{r.label}</option>
+          {roles.map((r) => (
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
           ))}
         </select>
       </div>

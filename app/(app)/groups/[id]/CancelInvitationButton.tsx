@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { cancelInvitation } from '../actions'
 import ConfirmActionButton from '@/components/ui/ConfirmActionButton'
 import { useLanguage } from '@/components/i18n/LanguageProvider'
+import { GROUP_INVITATION_CANCELLED_EVENT } from '@/lib/events/groups'
 
 type Props = {
   invitationId: string
@@ -25,7 +26,7 @@ export default function CancelInvitationButton({ invitationId, groupId }: Props)
       return { error: result.error }
     }
 
-    window.dispatchEvent(new Event('group:invitation-cancelled'))
+    window.dispatchEvent(new Event(GROUP_INVITATION_CANCELLED_EVENT))
     router.refresh()
     return { success: true }
   }

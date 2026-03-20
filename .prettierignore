@@ -1,0 +1,8 @@
+node_modules
+.next
+coverage
+reports
+logs
+public/sw.js
+public/workbox-*.js
+*.lock
