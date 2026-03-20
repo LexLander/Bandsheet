@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -14,10 +15,14 @@
     "smoke:i18n": "vitest run tests/api/i18n.route.test.ts",
     "smoke:invite": "vitest run tests/public/invite.actions.test.ts",
     "smoke:library": "vitest run tests/api/library.route.test.ts tests/api/library.id.route.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ci": "playwright test --reporter=line",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:ci": "npm run lint && npm run test && npm run smoke:i18n && npm run smoke:invite && npm run smoke:library && npm run audit:i18n && npm run test:coverage && npm run build",
+    "check:fast": "npm run lint && npx tsc --noEmit && npm run test",
+    "check:full": "npm run lint && npx tsc --noEmit && npm run test && npm run smoke:i18n && npm run smoke:invite && npm run smoke:library && npm run audit:i18n && npm run test:coverage && npm run build",
+    "test:ci": "npm run check:full",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -46,6 +51,8 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.0",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

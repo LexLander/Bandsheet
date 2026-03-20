@@ -1,22 +1,27 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { withSentryConfig } from '@sentry/nextjs';
-import type { NextConfig } from "next";
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { withSentryConfig } from '@sentry/nextjs'
+import bundleAnalyzer from '@next/bundle-analyzer'
+import type { NextConfig } from 'next'
 
-const workspaceRoot = path.dirname(fileURLToPath(import.meta.url));
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+const workspaceRoot = path.dirname(fileURLToPath(import.meta.url))
 
 function getSupabaseImagePattern() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl) return null;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!supabaseUrl) return null
   try {
-    const { protocol, hostname } = new URL(supabaseUrl);
+    const { protocol, hostname } = new URL(supabaseUrl)
     return {
       protocol: protocol.replace(':', '') as 'http' | 'https',
       hostname,
       pathname: '/storage/v1/object/public/**',
-    };
+    }
   } catch {
-    return null;
+    return null
   }
 }
 
@@ -24,25 +29,32 @@ const remotePatterns = [
   getSupabaseImagePattern(),
   { protocol: 'https' as const, hostname: 'avatars.githubusercontent.com', pathname: '/**' },
   { protocol: 'https' as const, hostname: 'lh3.googleusercontent.com', pathname: '/**' },
-].filter((pattern): pattern is NonNullable<ReturnType<typeof getSupabaseImagePattern>> | { protocol: 'https'; hostname: string; pathname: string } => Boolean(pattern));
+].filter(
+  (
+    pattern
+  ): pattern is
+    | NonNullable<ReturnType<typeof getSupabaseImagePattern>>
+    | { protocol: 'https'; hostname: string; pathname: string } => Boolean(pattern)
+)
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: workspaceRoot,
+  allowedDevOrigins: ['127.0.0.1'],
   experimental: {
     optimizePackageImports: ['@supabase/supabase-js', '@supabase/ssr'],
   },
   images: {
     remotePatterns,
   },
-};
+}
 
-export default withSentryConfig(nextConfig, {
+const sentryWrappedConfig = withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: "homstudio",
+  org: 'homstudio',
 
-  project: "javascript-nextjs",
+  project: 'javascript-nextjs',
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
@@ -72,4 +84,6 @@ export default withSentryConfig(nextConfig, {
       removeDebugLogging: true,
     },
   },
-});
+})
+
+export default withBundleAnalyzer(sentryWrappedConfig)
