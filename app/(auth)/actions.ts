@@ -28,6 +28,27 @@ function sanitizeNextPath(value: string | null | undefined): string | null {
   return trimmed
 }
 
+async function getAppOrigin() {
+  const h = await headers()
+  const origin = h.get('origin')?.trim()
+  if (origin) {
+    return origin.replace(/\/$/, '')
+  }
+
+  const host = h.get('x-forwarded-host')?.trim() || h.get('host')?.trim()
+  if (host) {
+    const proto = h.get('x-forwarded-proto')?.trim() || (host.includes('localhost') ? 'http' : 'https')
+    return `${proto}://${host}`
+  }
+
+  const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() || process.env.VERCEL_URL?.trim()
+  if (vercelUrl) {
+    return `https://${vercelUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}`
+  }
+
+  return (process.env.NEXT_PUBLIC_APP_URL ?? '').trim().replace(/\/$/, '')
+}
+
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
@@ -64,13 +85,14 @@ export async function register(formData: FormData) {
   const name = formData.get('name') as string
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const appOrigin = await getAppOrigin()
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { name },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm`,
+      emailRedirectTo: `${appOrigin}/auth/confirm`,
     },
   })
 
@@ -95,9 +117,8 @@ export async function requestPasswordReset(formData: FormData) {
     return { error: 'Вкажіть email для відновлення пароля' }
   }
 
-  const h = await headers()
-  const origin = h.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? ''
-  const redirectTo = `${origin}/auth/confirm?type=recovery&next=/reset-password`
+  const appOrigin = await getAppOrigin()
+  const redirectTo = `${appOrigin}/auth/confirm?type=recovery&next=/reset-password`
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
 

@@ -40,6 +40,9 @@ import {
 describe('auth actions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    delete process.env.VERCEL_PROJECT_PRODUCTION_URL
+    delete process.env.VERCEL_URL
+    headersMock.mockResolvedValue(new Headers())
   })
 
   it('login returns localized auth error', async () => {
@@ -135,6 +138,37 @@ describe('auth actions', () => {
     await expect(register(fd)).resolves.toEqual({ error: 'Користувач з таким email вже існує' })
   })
 
+  it('register uses forwarded production host for email confirmation redirect', async () => {
+    const signUp = vi.fn().mockResolvedValue({ error: null })
+    const supabase = {
+      auth: {
+        signUp,
+      },
+    }
+
+    createClientMock.mockResolvedValue(supabase)
+    headersMock.mockResolvedValue(new Headers({
+      host: 'bandsheet.vercel.app',
+      'x-forwarded-host': 'bandsheet.vercel.app',
+      'x-forwarded-proto': 'https',
+    }))
+
+    const fd = new FormData()
+    fd.set('name', 'Prod User')
+    fd.set('email', 'prod@test.dev')
+    fd.set('password', '123456')
+
+    await expect(register(fd)).rejects.toThrow('REDIRECT:/check-email')
+    expect(signUp).toHaveBeenCalledWith({
+      email: 'prod@test.dev',
+      password: '123456',
+      options: {
+        data: { name: 'Prod User' },
+        emailRedirectTo: 'https://bandsheet.vercel.app/auth/confirm',
+      },
+    })
+  })
+
   it('requestPasswordReset validates email', async () => {
     createClientMock.mockResolvedValue({ auth: { resetPasswordForEmail: vi.fn() } })
 
@@ -153,6 +187,21 @@ describe('auth actions', () => {
     await expect(requestPasswordReset(fd)).resolves.toEqual({ success: true })
     expect(resetPasswordForEmail).toHaveBeenCalledWith('user@test.dev', {
       redirectTo: 'https://app.example.com/auth/confirm?type=recovery&next=/reset-password',
+    })
+  })
+
+  it('requestPasswordReset falls back to Vercel production url when headers are missing', async () => {
+    const resetPasswordForEmail = vi.fn().mockResolvedValue({ error: null })
+    createClientMock.mockResolvedValue({ auth: { resetPasswordForEmail } })
+    headersMock.mockResolvedValue(new Headers())
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = 'bandsheet.vercel.app'
+
+    const fd = new FormData()
+    fd.set('email', 'user@test.dev')
+
+    await expect(requestPasswordReset(fd)).resolves.toEqual({ success: true })
+    expect(resetPasswordForEmail).toHaveBeenCalledWith('user@test.dev', {
+      redirectTo: 'https://bandsheet.vercel.app/auth/confirm?type=recovery&next=/reset-password',
     })
   })
 
