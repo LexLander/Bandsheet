@@ -42,6 +42,16 @@ describe('DELETE /api/library/[id]', () => {
     expect(await res.json()).toEqual({ error: 'id_required' })
   })
 
+  it('returns 400 when id is only whitespace', async () => {
+    const res = await DELETE(new Request('http://localhost/api/library/   ', { method: 'DELETE' }), {
+      params: Promise.resolve({ id: '   ' }),
+    })
+
+    expect(res.status).toBe(400)
+    expect(await res.json()).toEqual({ error: 'id_required' })
+    expect(removeFromLibrary).not.toHaveBeenCalled()
+  })
+
   it('removes library item for current user', async () => {
     vi.mocked(removeFromLibrary).mockResolvedValue(undefined)
 

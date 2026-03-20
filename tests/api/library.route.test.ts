@@ -75,4 +75,19 @@ describe('POST /api/library', () => {
     expect(addToLibrary).toHaveBeenCalledWith(supabaseMock, 'user-1', 'song-1', 'private')
     expect(await res.json()).toEqual({ ok: true, item: { id: 'item-1' } })
   })
+
+  it('trims song_id and falls back to public source for unknown values', async () => {
+    vi.mocked(isSongInLibrary).mockResolvedValue(false)
+    vi.mocked(addToLibrary).mockResolvedValue({ id: 'item-2' } as never)
+
+    const res = await POST(new Request('http://localhost/api/library', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ song_id: '  song-2  ', song_source: 'external' }),
+    }))
+
+    expect(res.status).toBe(200)
+    expect(addToLibrary).toHaveBeenCalledWith(supabaseMock, 'user-1', 'song-2', 'public')
+    expect(await res.json()).toEqual({ ok: true, item: { id: 'item-2' } })
+  })
 })

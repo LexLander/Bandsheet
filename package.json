@@ -10,10 +10,11 @@
     "audit:i18n": "npx --yes tsx scripts/i18n-bootstrap-audit.ts",
     "smoke:i18n": "vitest run tests/api/i18n.route.test.ts",
     "smoke:invite": "vitest run tests/public/invite.actions.test.ts",
+    "smoke:library": "vitest run tests/api/library.route.test.ts tests/api/library.id.route.test.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:ci": "npm run lint && npm run test && npm run smoke:i18n && npm run smoke:invite && npm run audit:i18n && npm run test:coverage && npm run build"
+    "test:ci": "npm run lint && npm run test && npm run smoke:i18n && npm run smoke:invite && npm run smoke:library && npm run audit:i18n && npm run test:coverage && npm run build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

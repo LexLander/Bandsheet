@@ -10,11 +10,12 @@ export async function DELETE(
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await context.params
-  if (!id) {
+  const itemId = id?.trim()
+  if (!itemId) {
     return NextResponse.json({ error: 'id_required' }, { status: 400 })
   }
 
   const supabase = await createClient()
-  await removeFromLibrary(supabase, id, user.id)
+  await removeFromLibrary(supabase, itemId, user.id)
   return NextResponse.json({ ok: true })
 }
