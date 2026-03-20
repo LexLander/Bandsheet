@@ -40,21 +40,8 @@ function hasUsableSupabaseAuditEnv() {
   return true
 }
 
-async function main() {
-  if (!hasUsableSupabaseAuditEnv()) {
-    writeJsonReport({
-      skipped: true,
-      reason: 'supabase_audit_env_not_configured',
-    })
-    return
-  }
-
-  const admin = createAdminClient()
-  const catalog = getBuiltInCatalog()
-  const now = new Date().toISOString()
-  const keyFormat = /^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+$/
-
-  const languageRows = [
+function getLanguageRows() {
+  return [
     {
       code: 'en',
       name: 'English',
@@ -86,12 +73,17 @@ async function main() {
       is_deleted: false,
     },
   ]
+}
 
-  const { error: langError } = await admin
-    .from('i18n_languages')
-    .upsert(languageRows, { onConflict: 'code' })
-  if (langError) throw new Error(`LANG_UPSERT_ERROR: ${langError.message}`)
+async function ensureLanguages(admin: ReturnType<typeof createAdminClient>) {
+  const { error } = await admin.from('i18n_languages').upsert(getLanguageRows(), {
+    onConflict: 'code',
+  })
+  if (error) throw new Error(`LANG_UPSERT_ERROR: ${error.message}`)
+}
 
+function splitCatalog(catalog: ReturnType<typeof getBuiltInCatalog>) {
+  const keyFormat = /^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+$/
   const invalidByConstraint = catalog
     .map((entry) => entry.key)
     .filter((key) => !keyFormat.test(key))
@@ -99,6 +91,14 @@ async function main() {
 
   const validCatalog = catalog.filter((entry) => keyFormat.test(entry.key))
 
+  return { invalidByConstraint, validCatalog }
+}
+
+async function upsertVariables(
+  admin: ReturnType<typeof createAdminClient>,
+  validCatalog: ReturnType<typeof getBuiltInCatalog>,
+  now: string
+) {
   const variableRows = validCatalog.map((entry) => ({
     var_key: entry.key,
     namespace: entry.namespace,
@@ -114,8 +114,13 @@ async function main() {
     const { error } = await admin.from('i18n_variables').upsert(part, { onConflict: 'var_key' })
     if (error) throw new Error(`VAR_UPSERT_ERROR: ${error.message}`)
   }
+}
 
-  const allKeys = validCatalog.map((x) => x.key)
+async function fetchKeyToIdMap(
+  admin: ReturnType<typeof createAdminClient>,
+  validCatalog: ReturnType<typeof getBuiltInCatalog>
+) {
+  const allKeys = validCatalog.map((entry) => entry.key)
   const keyToId = new Map<string, string>()
 
   for (const keysPart of chunk(allKeys, 200)) {
@@ -130,6 +135,13 @@ async function main() {
     }
   }
 
+  return keyToId
+}
+
+function buildValueRows(
+  validCatalog: ReturnType<typeof getBuiltInCatalog>,
+  keyToId: Map<string, string>
+) {
   const valueRows: Array<{
     variable_id: string
     language_code: 'ru' | 'uk'
@@ -162,22 +174,84 @@ async function main() {
     }
   }
 
+  return valueRows
+}
+
+async function upsertValueRows(
+  admin: ReturnType<typeof createAdminClient>,
+  valueRows: Array<{
+    variable_id: string
+    language_code: 'ru' | 'uk'
+    value: string
+    status: ValueStatus
+    provider: string
+    updated_by: null
+    is_enabled: boolean
+    is_deleted: boolean
+  }>
+) {
   for (const part of chunk(valueRows, 300)) {
     const { error } = await admin
       .from('i18n_values')
       .upsert(part, { onConflict: 'variable_id,language_code' })
     if (error) throw new Error(`VALUE_UPSERT_ERROR: ${error.message}`)
   }
+}
 
-  const builtInKeys = validCatalog.map((x) => x.key)
-  const { data: dbVariables, error: dbVarError } = await admin
+async function fetchAuditRows(
+  admin: ReturnType<typeof createAdminClient>,
+  validCatalog: ReturnType<typeof getBuiltInCatalog>
+) {
+  const builtInKeys = validCatalog.map((entry) => entry.key)
+  const { data, error } = await admin
     .from('i18n_variables')
     .select('id,var_key,source_text')
     .in('var_key', builtInKeys)
 
-  if (dbVarError) throw new Error(`AUDIT_VAR_FETCH_ERROR: ${dbVarError.message}`)
+  if (error) throw new Error(`AUDIT_VAR_FETCH_ERROR: ${error.message}`)
 
-  const varRows = (dbVariables ?? []) as DbVariable[]
+  return {
+    builtInKeys,
+    varRows: (data ?? []) as DbVariable[],
+  }
+}
+
+async function fetchTranslationMaps(admin: ReturnType<typeof createAdminClient>, varIds: string[]) {
+  const ruByVar = new Map<string, string>()
+  const ukByVar = new Map<string, string>()
+
+  for (const idsPart of chunk(varIds, 300)) {
+    const { data: values, error } = await admin
+      .from('i18n_values')
+      .select('variable_id,language_code,value,status,is_enabled,is_deleted')
+      .in('variable_id', idsPart)
+      .in('language_code', ['ru', 'uk'])
+      .eq('is_deleted', false)
+      .eq('is_enabled', true)
+      .in('status', ['published', 'needs_review'])
+
+    if (error) throw new Error(`AUDIT_VAL_FETCH_ERROR: ${error.message}`)
+
+    for (const row of (values ?? []) as DbValue[]) {
+      const trimmed = String(row.value ?? '').trim()
+      if (row.language_code === 'ru') ruByVar.set(row.variable_id, trimmed)
+      if (row.language_code === 'uk') ukByVar.set(row.variable_id, trimmed)
+    }
+  }
+
+  return { ruByVar, ukByVar }
+}
+
+function buildAuditReport(
+  catalogCount: number,
+  invalidByConstraint: string[],
+  validCatalogCount: number,
+  varRows: DbVariable[],
+  valueRowsCount: number,
+  builtInKeys: string[],
+  ruByVar: Map<string, string>,
+  ukByVar: Map<string, string>
+) {
   const dbKeySet = new Set(varRows.map((row) => row.var_key))
   const missingKeys = builtInKeys.filter((key) => !dbKeySet.has(key)).sort()
 
@@ -188,29 +262,6 @@ async function main() {
 
   const idToKey = new Map(varRows.map((row) => [row.id, row.var_key] as const))
   const varIds = varRows.map((row) => row.id)
-
-  const ruByVar = new Map<string, string>()
-  const ukByVar = new Map<string, string>()
-
-  for (const idsPart of chunk(varIds, 300)) {
-    const { data: values, error: valuesError } = await admin
-      .from('i18n_values')
-      .select('variable_id,language_code,value,status,is_enabled,is_deleted')
-      .in('variable_id', idsPart)
-      .in('language_code', ['ru', 'uk'])
-      .eq('is_deleted', false)
-      .eq('is_enabled', true)
-      .in('status', ['published', 'needs_review'])
-
-    if (valuesError) throw new Error(`AUDIT_VAL_FETCH_ERROR: ${valuesError.message}`)
-
-    for (const row of (values ?? []) as DbValue[]) {
-      const trimmed = String(row.value ?? '').trim()
-      if (row.language_code === 'ru') ruByVar.set(row.variable_id, trimmed)
-      if (row.language_code === 'uk') ukByVar.set(row.variable_id, trimmed)
-    }
-  }
-
   const missingRu: string[] = []
   const missingUk: string[] = []
 
@@ -224,13 +275,13 @@ async function main() {
   missingRu.sort()
   missingUk.sort()
 
-  writeJsonReport({
-    builtInKeys: catalog.length,
+  return {
+    builtInKeys: catalogCount,
     blockedByDbConstraintCount: invalidByConstraint.length,
     blockedByDbConstraintSample: invalidByConstraint.slice(0, 20),
-    validForCurrentConstraint: validCatalog.length,
+    validForCurrentConstraint: validCatalogCount,
     dbVariablesForBuiltIn: varRows.length,
-    dbValuesUpsertedRUUK: valueRows.length,
+    dbValuesUpsertedRUUK: valueRowsCount,
     missingKeysCount: missingKeys.length,
     missingEnCount: missingEn.length,
     missingRuCount: missingRu.length,
@@ -239,7 +290,48 @@ async function main() {
     sampleMissingEn: missingEn.slice(0, 20),
     sampleMissingRu: missingRu.slice(0, 20),
     sampleMissingUk: missingUk.slice(0, 20),
-  })
+  }
+}
+
+async function main() {
+  if (!hasUsableSupabaseAuditEnv()) {
+    writeJsonReport({
+      skipped: true,
+      reason: 'supabase_audit_env_not_configured',
+    })
+    return
+  }
+
+  const admin = createAdminClient()
+  const catalog = getBuiltInCatalog()
+  const now = new Date().toISOString()
+  const { invalidByConstraint, validCatalog } = splitCatalog(catalog)
+
+  await ensureLanguages(admin)
+  await upsertVariables(admin, validCatalog, now)
+
+  const keyToId = await fetchKeyToIdMap(admin, validCatalog)
+  const valueRows = buildValueRows(validCatalog, keyToId)
+  await upsertValueRows(admin, valueRows)
+
+  const { builtInKeys, varRows } = await fetchAuditRows(admin, validCatalog)
+  const { ruByVar, ukByVar } = await fetchTranslationMaps(
+    admin,
+    varRows.map((row) => row.id)
+  )
+
+  writeJsonReport(
+    buildAuditReport(
+      catalog.length,
+      invalidByConstraint,
+      validCatalog.length,
+      varRows,
+      valueRows.length,
+      builtInKeys,
+      ruByVar,
+      ukByVar
+    )
+  )
 }
 
 main().catch((error) => {
