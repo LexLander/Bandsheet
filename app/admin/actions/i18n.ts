@@ -1,5 +1,3 @@
-'use server'
-
 export * from './i18n-catalog-actions'
 export * from './i18n-import-actions'
 export * from './i18n-language-actions'
