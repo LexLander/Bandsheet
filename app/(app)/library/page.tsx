@@ -11,7 +11,7 @@ export default async function LibraryPage() {
       <div className="rounded-2xl border border-black/10 dark:border-white/10 p-6 text-center">
         <p className="text-sm text-foreground/70 mb-2">{t.dashboard.mySongs}</p>
         <p className="text-sm text-foreground/50 mb-5">
-          Library tools are being prepared. You can already manage groups and events.
+          {t.dashboard.libraryPreparing}
         </p>
         <div className="flex items-center justify-center gap-3">
           <Link

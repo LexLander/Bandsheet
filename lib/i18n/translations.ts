@@ -39,6 +39,7 @@ type TranslationTree = {
     myGroups: string
     library: string
     mySongs: string
+    libraryPreparing: string
     events: string
     concerts: string
     profile: string
@@ -391,6 +392,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       myGroups: 'Мої групи',
       library: 'Бібліотека',
       mySongs: 'Мої пісні',
+      libraryPreparing: 'Інструменти бібліотеки готуються. Ви вже можете керувати групами та подіями.',
       events: 'Події',
       concerts: 'Концерти',
       profile: 'Профіль',
@@ -741,6 +743,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       myGroups: 'Мои группы',
       library: 'Библиотека',
       mySongs: 'Мои песни',
+      libraryPreparing: 'Инструменты библиотеки готовятся. Вы уже можете управлять группами и событиями.',
       events: 'События',
       concerts: 'Концерты',
       profile: 'Профиль',
@@ -1091,6 +1094,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       myGroups: 'My groups',
       library: 'Library',
       mySongs: 'My songs',
+      libraryPreparing: 'Library tools are being prepared. You can already manage groups and events.',
       events: 'Events',
       concerts: 'Concerts',
       profile: 'Profile',
