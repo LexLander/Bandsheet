@@ -18,27 +18,51 @@ export default function ConfirmActionButton({
   className,
 }: Props) {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isConfirming, setIsConfirming] = useState(false)
 
   async function handleClick() {
-    if (confirmMessage && !window.confirm(confirmMessage)) return
-    // No confirmation prompt: assume checkbox selection or explicit action
+    if (confirmMessage && !isConfirming) {
+      setError(null)
+      setIsConfirming(true)
+      return
+    }
+
+    setError(null)
+    setIsConfirming(false)
     setLoading(true)
     const result = await onConfirm()
     setLoading(false)
 
     if (result && 'error' in result && result.error) {
-      window.alert(result.error)
+      setError(result.error)
     }
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={loading}
-      className={className}
-    >
-      {loading ? (pendingLabel ?? 'Виконую...') : label}
-    </button>
+    <div className="space-y-2">
+      <button type="button" onClick={handleClick} disabled={loading} className={className}>
+        {loading ? (pendingLabel ?? 'Виконую...') : isConfirming ? 'Підтвердити' : label}
+      </button>
+
+      {isConfirming && confirmMessage ? (
+        <div className="space-y-2">
+          <p className="text-xs text-red-600">{confirmMessage}</p>
+          <button
+            type="button"
+            onClick={() => setIsConfirming(false)}
+            className="text-xs text-foreground/70 underline underline-offset-2"
+          >
+            Скасувати
+          </button>
+        </div>
+      ) : null}
+
+      {error ? (
+        <p role="alert" className="text-xs text-red-600">
+          {error}
+        </p>
+      ) : null}
+    </div>
   )
 }

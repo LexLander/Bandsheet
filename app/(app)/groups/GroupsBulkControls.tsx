@@ -7,6 +7,7 @@ import { GROUPS_SELECTED_EVENT, type GroupsSelectedDetail } from '@/lib/events/g
 
 export default function GroupsBulkControls() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -22,13 +23,14 @@ export default function GroupsBulkControls() {
     if (selectedIds.length === 0) return
     // Removed blocking browser confirm to avoid modal popup
 
+    setError(null)
     const formData = new FormData()
     selectedIds.forEach((id) => formData.append('group_ids', id))
     formData.set('is_deleted', 'true')
 
     const res = await bulkToggleGroups(formData)
     if (res?.error) {
-      window.alert(res.error)
+      setError(res.error)
       return
     }
 
@@ -38,7 +40,7 @@ export default function GroupsBulkControls() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="space-y-2">
       <button
         onClick={handleBulkDelete}
         className={`items-center gap-1.5 rounded-xl bg-[#e53935] px-4 py-2 text-sm font-medium text-white ${
@@ -56,6 +58,11 @@ export default function GroupsBulkControls() {
         </svg>
         Видалити
       </button>
+      {error ? (
+        <p role="alert" className="text-xs text-red-600">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }
