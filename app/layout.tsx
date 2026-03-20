@@ -1,38 +1,38 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
 import { Suspense } from 'react'
-import "./globals.css";
+import './globals.css'
 import { LanguageProvider } from '@/components/i18n/LanguageProvider'
+import { ThemeInitializer } from '@/components/ThemeInitializer'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "BandSheet",
-  description: "OPEN. PLAY. SHINE.",
-};
+  title: 'BandSheet',
+  description: 'OPEN. PLAY. SHINE.',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="uk">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeInitializer />
         <Suspense fallback={null}>
           <LanguageProvider>{children}</LanguageProvider>
         </Suspense>
       </body>
     </html>
-  );
+  )
 }

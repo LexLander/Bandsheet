@@ -1,7 +1,8 @@
-"use client"
+'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLanguage } from '@/components/i18n/LanguageProvider'
+import { applyTheme, saveTheme } from '@/lib/theme'
 
 type Settings = {
   theme?: 'system' | 'light' | 'dark'
@@ -29,6 +30,17 @@ export default function EditProfileForm({ initialProfile }: { initialProfile: Pr
   const [settings, setSettings] = useState<Settings>(initialProfile.settings ?? defaultSettings)
   const [message, setMessage] = useState<string | null>(null)
 
+  // Apply initial theme preference when component mounts (initialization only)
+  useEffect(() => {
+    const theme = (initialProfile.settings?.theme || defaultSettings.theme) as
+      | 'system'
+      | 'light'
+      | 'dark'
+    applyTheme(theme)
+    saveTheme(theme)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -41,6 +53,13 @@ export default function EditProfileForm({ initialProfile }: { initialProfile: Pr
       })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
+
+      // Apply theme and save preference after successful save
+      if (settings.theme) {
+        applyTheme(settings.theme)
+        saveTheme(settings.theme)
+      }
+
       setMessage(t.profile.saved)
     } catch (err: unknown) {
       setMessage(err instanceof Error ? err.message : '❌')
@@ -50,6 +69,14 @@ export default function EditProfileForm({ initialProfile }: { initialProfile: Pr
     }
   }
 
+  function handleThemeChange(newTheme: Settings['theme']) {
+    // Update state
+    setSettings({ ...settings, theme: newTheme })
+    // Apply theme immediately for live preview
+    if (newTheme) {
+      applyTheme(newTheme)
+    }
+  }
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
@@ -75,7 +102,7 @@ export default function EditProfileForm({ initialProfile }: { initialProfile: Pr
           <label className="text-sm">{t.profile.theme}</label>
           <select
             value={settings.theme}
-            onChange={(e) => setSettings({ ...settings, theme: e.target.value as Settings['theme'] })}
+            onChange={(e) => handleThemeChange(e.target.value as Settings['theme'])}
             className="ml-2 rounded border p-1"
           >
             <option value="system">{t.profile.themeSystem}</option>
@@ -112,4 +139,3 @@ export default function EditProfileForm({ initialProfile }: { initialProfile: Pr
     </form>
   )
 }
-
