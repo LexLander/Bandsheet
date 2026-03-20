@@ -132,6 +132,8 @@ type TranslationTree = {
     passwordsDoNotMatch: string
     loginTitle: string
     passwordUpdated: string
+    invalidLink: string
+    accountBlocked: string
     passwordLabel: string
     forgotPassword: string
     loginSubmitting: string
@@ -504,6 +506,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordsDoNotMatch: 'Паролі не співпадають',
       loginTitle: 'Вхід',
       passwordUpdated: 'Пароль успішно оновлено. Тепер увійдіть з новим паролем.',
+      invalidLink: 'Посилання недійсне або протерміноване. Запросіть новий лист.',
+      accountBlocked: 'Ваш акаунт заблоковано. Зверніться до адміністратора.',
       passwordLabel: 'Пароль',
       forgotPassword: 'Забули пароль?',
       loginSubmitting: 'Входжу...',
@@ -874,6 +878,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordsDoNotMatch: 'Пароли не совпадают',
       loginTitle: 'Вход',
       passwordUpdated: 'Пароль успешно обновлён. Теперь войдите с новым паролем.',
+      invalidLink: 'Ссылка недействительна или истекла. Запросите новое письмо.',
+      accountBlocked: 'Ваш аккаунт заблокирован. Обратитесь к администратору.',
       passwordLabel: 'Пароль',
       forgotPassword: 'Забыли пароль?',
       loginSubmitting: 'Вхожу...',
@@ -1244,6 +1250,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordsDoNotMatch: 'Passwords do not match',
       loginTitle: 'Sign in',
       passwordUpdated: 'Password updated successfully. You can now sign in with your new password.',
+      invalidLink: 'The link is invalid or has expired. Request a new email.',
+      accountBlocked: 'Your account has been blocked. Contact an administrator.',
       passwordLabel: 'Password',
       forgotPassword: 'Forgot password?',
       loginSubmitting: 'Signing in...',

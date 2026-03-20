@@ -42,6 +42,7 @@ describe('auth actions', () => {
     vi.clearAllMocks()
     delete process.env.VERCEL_PROJECT_PRODUCTION_URL
     delete process.env.VERCEL_URL
+    process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
     headersMock.mockResolvedValue(new Headers())
   })
 
@@ -59,6 +60,18 @@ describe('auth actions', () => {
     fd.set('password', 'bad')
 
     await expect(login(fd)).resolves.toEqual({ error: 'Невірний email або пароль' })
+  })
+
+  it('login validates required credentials before hitting auth provider', async () => {
+    const signInWithPassword = vi.fn()
+    createClientMock.mockResolvedValue({ auth: { signInWithPassword } })
+
+    const fd = new FormData()
+    fd.set('email', '   ')
+    fd.set('password', '')
+
+    await expect(login(fd)).resolves.toEqual({ error: 'Вкажіть email' })
+    expect(signInWithPassword).not.toHaveBeenCalled()
   })
 
   it('login redirects admin to verify-device', async () => {
@@ -138,6 +151,19 @@ describe('auth actions', () => {
     await expect(register(fd)).resolves.toEqual({ error: 'Користувач з таким email вже існує' })
   })
 
+  it('register validates required fields before sign up', async () => {
+    const signUp = vi.fn()
+    createClientMock.mockResolvedValue({ auth: { signUp } })
+
+    const fd = new FormData()
+    fd.set('name', '   ')
+    fd.set('email', '   ')
+    fd.set('password', '123')
+
+    await expect(register(fd)).resolves.toEqual({ error: 'Вкажіть імʼя' })
+    expect(signUp).not.toHaveBeenCalled()
+  })
+
   it('register uses forwarded production host for email confirmation redirect', async () => {
     const signUp = vi.fn().mockResolvedValue({ error: null })
     const supabase = {
@@ -169,11 +195,43 @@ describe('auth actions', () => {
     })
   })
 
+  it('register returns config error when app origin cannot be resolved', async () => {
+    const signUp = vi.fn()
+    createClientMock.mockResolvedValue({ auth: { signUp } })
+    headersMock.mockResolvedValue(new Headers())
+    process.env.NEXT_PUBLIC_APP_URL = ''
+
+    const fd = new FormData()
+    fd.set('name', 'User')
+    fd.set('email', 'user@test.dev')
+    fd.set('password', '123456')
+
+    await expect(register(fd)).resolves.toEqual({
+      error: 'Помилка конфігурації авторизації. Спробуйте пізніше',
+    })
+    expect(signUp).not.toHaveBeenCalled()
+  })
+
   it('requestPasswordReset validates email', async () => {
     createClientMock.mockResolvedValue({ auth: { resetPasswordForEmail: vi.fn() } })
 
     const fd = new FormData()
     await expect(requestPasswordReset(fd)).resolves.toEqual({ error: 'Вкажіть email для відновлення пароля' })
+  })
+
+  it('requestPasswordReset returns config error when app origin cannot be resolved', async () => {
+    const resetPasswordForEmail = vi.fn()
+    createClientMock.mockResolvedValue({ auth: { resetPasswordForEmail } })
+    headersMock.mockResolvedValue(new Headers())
+    process.env.NEXT_PUBLIC_APP_URL = ''
+
+    const fd = new FormData()
+    fd.set('email', 'user@test.dev')
+
+    await expect(requestPasswordReset(fd)).resolves.toEqual({
+      error: 'Помилка конфігурації авторизації. Спробуйте пізніше',
+    })
+    expect(resetPasswordForEmail).not.toHaveBeenCalled()
   })
 
   it('requestPasswordReset uses origin header and returns success', async () => {

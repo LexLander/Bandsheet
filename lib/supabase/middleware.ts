@@ -16,6 +16,15 @@ function makeDeviceHash(request: NextRequest) {
   return `d${Math.abs(hash)}`
 }
 
+function buildLoginRedirectUrl(request: NextRequest) {
+  const loginUrl = new URL('/login', request.url)
+  const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`
+  if (nextPath && nextPath !== '/login') {
+    loginUrl.searchParams.set('next', nextPath)
+  }
+  return loginUrl
+}
+
 // Обновляет сессию Supabase и редиректит неавторизованных пользователей
 export async function updateSession(request: NextRequest) {
   const supabaseResponse = NextResponse.next({ request })
@@ -68,7 +77,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (!user && isProtected) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(buildLoginRedirectUrl(request))
   }
 
   if (user) {

@@ -28,6 +28,14 @@ function sanitizeNextPath(value: string | null | undefined): string | null {
   return trimmed
 }
 
+function sanitizeEmail(value: FormDataEntryValue | null) {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function sanitizeRequiredText(value: FormDataEntryValue | null) {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
 async function getAppOrigin() {
   const h = await headers()
   const origin = h.get('origin')?.trim()
@@ -52,9 +60,17 @@ async function getAppOrigin() {
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const email = sanitizeEmail(formData.get('email'))
+  const password = (formData.get('password') as string | null) ?? ''
   const nextPath = sanitizeNextPath(formData.get('next') as string | null)
+
+  if (!email) {
+    return { error: 'Вкажіть email' }
+  }
+
+  if (!password) {
+    return { error: 'Вкажіть пароль' }
+  }
 
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -82,10 +98,26 @@ export async function login(formData: FormData) {
 export async function register(formData: FormData) {
   const supabase = await createClient()
 
-  const name = formData.get('name') as string
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const name = sanitizeRequiredText(formData.get('name'))
+  const email = sanitizeEmail(formData.get('email'))
+  const password = (formData.get('password') as string | null) ?? ''
   const appOrigin = await getAppOrigin()
+
+  if (!name) {
+    return { error: 'Вкажіть імʼя' }
+  }
+
+  if (!email) {
+    return { error: 'Вкажіть email' }
+  }
+
+  if (password.length < 6) {
+    return { error: 'Пароль має бути не менше 6 символів' }
+  }
+
+  if (!appOrigin) {
+    return { error: 'Помилка конфігурації авторизації. Спробуйте пізніше' }
+  }
 
   const { error } = await supabase.auth.signUp({
     email,
@@ -112,12 +144,16 @@ export async function logout() {
 export async function requestPasswordReset(formData: FormData) {
   const supabase = await createClient()
 
-  const email = (formData.get('email') as string | null)?.trim()
+  const email = sanitizeEmail(formData.get('email'))
   if (!email) {
     return { error: 'Вкажіть email для відновлення пароля' }
   }
 
   const appOrigin = await getAppOrigin()
+  if (!appOrigin) {
+    return { error: 'Помилка конфігурації авторизації. Спробуйте пізніше' }
+  }
+
   const redirectTo = `${appOrigin}/auth/confirm?type=recovery&next=/reset-password`
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })

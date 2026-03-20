@@ -13,6 +13,16 @@ export default function LoginPage() {
     if (typeof window === 'undefined') return false
     return new URLSearchParams(window.location.search).get('reset') === 'success'
   })
+  const [authNotice] = useState(() => {
+    if (typeof window === 'undefined') return ''
+    const params = new URLSearchParams(window.location.search)
+    const errorCode = params.get('error')
+    const reason = params.get('reason')
+
+    if (errorCode === 'invalid_link') return t.auth.invalidLink
+    if (reason === 'blocked') return t.auth.accountBlocked
+    return ''
+  })
   const [nextPath] = useState(() => {
     if (typeof window === 'undefined') return ''
     const raw = new URLSearchParams(window.location.search).get('next')
@@ -39,6 +49,12 @@ export default function LoginPage() {
       {resetDone && (
         <p className="text-sm text-green-600 mb-4">
           {t.auth.passwordUpdated}
+        </p>
+      )}
+
+      {authNotice && (
+        <p className="text-sm text-amber-600 mb-4">
+          {authNotice}
         </p>
       )}
 
