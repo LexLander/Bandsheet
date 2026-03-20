@@ -148,7 +148,7 @@ describe('auth actions', () => {
     fd.set('email', 'user@test.dev')
     fd.set('password', '123456')
 
-    await expect(register(fd)).resolves.toEqual({ error: 'Користувач з таким email вже існує' })
+    await expect(register(fd)).rejects.toThrow('REDIRECT:/register?notice=duplicateEmail')
   })
 
   it('register validates required fields before sign up', async () => {

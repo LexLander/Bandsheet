@@ -146,6 +146,7 @@ type TranslationTree = {
     passwordPlaceholder: string
     registerSubmitting: string
     registerSubmit: string
+    registerDuplicateEmail: string
     hasAccount: string
     loginLink: string
     forgotTitle: string
@@ -520,6 +521,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordPlaceholder: 'мінімум 6 символів',
       registerSubmitting: 'Реєструю...',
       registerSubmit: 'Створити акаунт',
+      registerDuplicateEmail: 'Цей email вже зареєстрований. Якщо це ваш акаунт, спробуйте увійти або відновити пароль.',
       hasAccount: 'Вже є акаунт?',
       loginLink: 'Увійти',
       forgotTitle: 'Відновлення пароля',
@@ -892,6 +894,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordPlaceholder: 'минимум 6 символов',
       registerSubmitting: 'Регистрирую...',
       registerSubmit: 'Создать аккаунт',
+      registerDuplicateEmail: 'Этот email уже зарегистрирован. Если это ваш аккаунт, попробуйте войти или восстановить пароль.',
       hasAccount: 'Уже есть аккаунт?',
       loginLink: 'Войти',
       forgotTitle: 'Восстановление пароля',
@@ -1264,6 +1267,7 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordPlaceholder: 'at least 6 characters',
       registerSubmitting: 'Signing up...',
       registerSubmit: 'Create account',
+      registerDuplicateEmail: 'This email is already registered. If this is your account, try signing in or resetting your password.',
       hasAccount: 'Already have an account?',
       loginLink: 'Sign in',
       forgotTitle: 'Password recovery',

@@ -129,6 +129,10 @@ export async function register(formData: FormData) {
   })
 
   if (error) {
+    // If user already exists, redirect with notice instead of error
+    if (error.message === 'User already registered') {
+      redirect('/register?notice=duplicateEmail')
+    }
     return { error: translateError(error.message) }
   }
 
