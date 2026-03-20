@@ -4,33 +4,24 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { login } from '../actions'
 import { useLanguage } from '@/components/i18n/LanguageProvider'
+import { parseLoginQueryState } from './query-state'
 
 export default function LoginPage() {
   const { t } = useLanguage()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [resetDone] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return new URLSearchParams(window.location.search).get('reset') === 'success'
+  const [queryState] = useState(() => {
+    if (typeof window === 'undefined') {
+      return { resetDone: false, noticeKey: null, nextPath: '' }
+    }
+    return parseLoginQueryState(window.location.search)
   })
-  const [authNotice] = useState(() => {
-    if (typeof window === 'undefined') return ''
-    const params = new URLSearchParams(window.location.search)
-    const errorCode = params.get('error')
-    const reason = params.get('reason')
 
-    if (errorCode === 'invalid_link') return t.auth.invalidLink
-    if (reason === 'blocked') return t.auth.accountBlocked
-    return ''
-  })
-  const [nextPath] = useState(() => {
-    if (typeof window === 'undefined') return ''
-    const raw = new URLSearchParams(window.location.search).get('next')
-    if (!raw) return ''
-    if (!raw.startsWith('/')) return ''
-    if (raw.startsWith('//')) return ''
-    return raw
-  })
+  const authNotice = queryState.noticeKey === 'invalidLink'
+    ? t.auth.invalidLink
+    : queryState.noticeKey === 'accountBlocked'
+      ? t.auth.accountBlocked
+      : ''
 
   async function handleSubmit(formData: FormData) {
     setLoading(true)
@@ -46,7 +37,7 @@ export default function LoginPage() {
     <div className="bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-8">
       <h2 className="text-lg font-semibold mb-6">{t.auth.loginTitle}</h2>
 
-      {resetDone && (
+      {queryState.resetDone && (
         <p className="text-sm text-green-600 mb-4">
           {t.auth.passwordUpdated}
         </p>
@@ -59,7 +50,7 @@ export default function LoginPage() {
       )}
 
       <form action={handleSubmit} className="space-y-4">
-        <input type="hidden" name="next" value={nextPath} />
+        <input type="hidden" name="next" value={queryState.nextPath} />
         <div>
           <label className="block text-sm font-medium mb-1.5" htmlFor="email">
             Email
