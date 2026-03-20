@@ -112,7 +112,7 @@ describe('setI18nLanguageEnabled action', () => {
   })
 })
 
-describe('other i18n admin actions', () => {
+describe('i18n admin actions: language management', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -195,6 +195,12 @@ describe('other i18n admin actions', () => {
       code: 'ru',
     })
   })
+})
+
+describe('i18n admin actions: import', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('importI18nFromJson rejects invalid json payload', async () => {
     const admin = { from: vi.fn() }
@@ -253,6 +259,12 @@ describe('other i18n admin actions', () => {
       variables: 1,
       values: 1,
     })
+  })
+})
+
+describe('i18n admin actions: bulk operations', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   it('bulk actions require selected rows', async () => {

@@ -1,11 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const {
-  redirectMock,
-  headersMock,
-  createClientMock,
-  fetchProfileByIdMock,
-} = vi.hoisted(() => ({
+const { redirectMock, headersMock, createClientMock, fetchProfileByIdMock } = vi.hoisted(() => ({
   redirectMock: vi.fn((url: string) => {
     throw new Error(`REDIRECT:${url}`)
   }),
@@ -30,26 +25,27 @@ vi.mock('@/lib/db/profiles', () => ({
   fetchProfileById: fetchProfileByIdMock,
 }))
 
-import {
-  login,
-  register,
-  requestPasswordReset,
-  updatePassword,
-} from '@/app/(auth)/actions'
+import { login, register, requestPasswordReset, updatePassword } from '@/app/(auth)/actions'
 
-describe('auth actions', () => {
+function resetAuthTestContext() {
+  vi.clearAllMocks()
+  delete process.env.VERCEL_PROJECT_PRODUCTION_URL
+  delete process.env.VERCEL_URL
+  process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
+  headersMock.mockResolvedValue(new Headers())
+}
+
+describe('auth actions: login', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    delete process.env.VERCEL_PROJECT_PRODUCTION_URL
-    delete process.env.VERCEL_URL
-    process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
-    headersMock.mockResolvedValue(new Headers())
+    resetAuthTestContext()
   })
 
   it('login returns localized auth error', async () => {
     const supabase = {
       auth: {
-        signInWithPassword: vi.fn().mockResolvedValue({ error: { message: 'Invalid login credentials' } }),
+        signInWithPassword: vi
+          .fn()
+          .mockResolvedValue({ error: { message: 'Invalid login credentials' } }),
       },
     }
 
@@ -133,6 +129,12 @@ describe('auth actions', () => {
     })
     expect(signOut).toHaveBeenCalled()
   })
+})
+
+describe('auth actions: register', () => {
+  beforeEach(() => {
+    resetAuthTestContext()
+  })
 
   it('register returns translated duplicate-user error', async () => {
     const supabase = {
@@ -173,11 +175,13 @@ describe('auth actions', () => {
     }
 
     createClientMock.mockResolvedValue(supabase)
-    headersMock.mockResolvedValue(new Headers({
-      host: 'bandsheet.vercel.app',
-      'x-forwarded-host': 'bandsheet.vercel.app',
-      'x-forwarded-proto': 'https',
-    }))
+    headersMock.mockResolvedValue(
+      new Headers({
+        host: 'bandsheet.vercel.app',
+        'x-forwarded-host': 'bandsheet.vercel.app',
+        'x-forwarded-proto': 'https',
+      })
+    )
 
     const fd = new FormData()
     fd.set('name', 'Prod User')
@@ -211,12 +215,20 @@ describe('auth actions', () => {
     })
     expect(signUp).not.toHaveBeenCalled()
   })
+})
+
+describe('auth actions: requestPasswordReset', () => {
+  beforeEach(() => {
+    resetAuthTestContext()
+  })
 
   it('requestPasswordReset validates email', async () => {
     createClientMock.mockResolvedValue({ auth: { resetPasswordForEmail: vi.fn() } })
 
     const fd = new FormData()
-    await expect(requestPasswordReset(fd)).resolves.toEqual({ error: 'Вкажіть email для відновлення пароля' })
+    await expect(requestPasswordReset(fd)).resolves.toEqual({
+      error: 'Вкажіть email для відновлення пароля',
+    })
   })
 
   it('requestPasswordReset returns config error when app origin cannot be resolved', async () => {
@@ -261,6 +273,12 @@ describe('auth actions', () => {
     expect(resetPasswordForEmail).toHaveBeenCalledWith('user@test.dev', {
       redirectTo: 'https://bandsheet.vercel.app/auth/confirm?type=recovery&next=/reset-password',
     })
+  })
+})
+
+describe('auth actions: updatePassword', () => {
+  beforeEach(() => {
+    resetAuthTestContext()
   })
 
   it('updatePassword validates mismatch', async () => {

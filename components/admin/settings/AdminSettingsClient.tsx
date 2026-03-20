@@ -24,6 +24,7 @@ type Props = {
   initialSettings: SiteSettings
 }
 
+// eslint-disable-next-line max-lines-per-function
 export default function AdminSettingsClient({ initialSettings }: Props) {
   const { t } = useLanguage()
 
@@ -39,21 +40,28 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
   const [privacyUrl, setPrivacyUrl] = useState(initialSettings.privacy_url)
   const [termsUrl, setTermsUrl] = useState(initialSettings.terms_url)
 
-  const [allowRegistration, setAllowRegistration] = useState(parseBoolean(initialSettings.allow_registration, true))
+  const [allowRegistration, setAllowRegistration] = useState(
+    parseBoolean(initialSettings.allow_registration, true)
+  )
 
-  const [maintenanceEnabled, setMaintenanceEnabled] = useState(parseBoolean(initialSettings.maintenance_enabled, false))
+  const [maintenanceEnabled, setMaintenanceEnabled] = useState(
+    parseBoolean(initialSettings.maintenance_enabled, false)
+  )
   const [maintenanceTitle, setMaintenanceTitle] = useState(initialSettings.maintenance_title)
   const [maintenanceMessage, setMaintenanceMessage] = useState(initialSettings.maintenance_message)
   const [maintenanceEta, setMaintenanceEta] = useState(initialSettings.maintenance_eta)
 
-  const [aiProvider, setAiProvider] = useState<'anthropic' | 'openai'>(parseProvider(initialSettings.ai_provider))
+  const [aiProvider, setAiProvider] = useState<'anthropic' | 'openai'>(
+    parseProvider(initialSettings.ai_provider)
+  )
   const [apiKeyDraft, setApiKeyDraft] = useState('')
   const [maskedApiKey, setMaskedApiKey] = useState(initialSettings.ai_api_key)
   const [showApiKey, setShowApiKey] = useState(false)
   const [verifyState, setVerifyState] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle')
 
   const previewTitle = maintenanceTitle.trim() || "We'll be back soon"
-  const previewMessage = maintenanceMessage.trim() || "We're updating the site and making improvements. Be right back."
+  const previewMessage =
+    maintenanceMessage.trim() || "We're updating the site and making improvements. Be right back."
 
   const verifyLabel = useMemo(() => {
     if (verifyState === 'checking') return t.profile.saving
@@ -117,12 +125,12 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
   }
 
   const isSaving = (section: SectionId) => savingSection === section
-  const menuButtonClass = (section: SectionId) => (
-    `w-full rounded-md px-3 py-2 text-left text-sm transition ${activeSection === section
-      ? 'bg-black/10 dark:bg-white/10 font-medium'
-      : 'hover:bg-black/5 dark:hover:bg-white/5 text-foreground/80'
+  const menuButtonClass = (section: SectionId) =>
+    `w-full rounded-md px-3 py-2 text-left text-sm transition ${
+      activeSection === section
+        ? 'bg-black/10 dark:bg-white/10 font-medium'
+        : 'hover:bg-black/5 dark:hover:bg-white/5 text-foreground/80'
     }`
-  )
 
   return (
     <div className="space-y-6">
@@ -134,25 +142,61 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
       <div className="flex gap-8 items-start">
         <nav className="w-[220px] shrink-0 rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 space-y-5">
           <div>
-            <p className="mb-2 text-xs uppercase tracking-wide text-foreground/50">{t.admin.settings.menuSite}</p>
+            <p className="mb-2 text-xs uppercase tracking-wide text-foreground/50">
+              {t.admin.settings.menuSite}
+            </p>
             <div className="space-y-1">
-              <button type="button" onClick={() => setActiveSection('general')} className={menuButtonClass('general')}>{t.admin.settings.general}</button>
-              <button type="button" onClick={() => setActiveSection('contacts')} className={menuButtonClass('contacts')}>{t.admin.settings.contacts}</button>
+              <button
+                type="button"
+                onClick={() => setActiveSection('general')}
+                className={menuButtonClass('general')}
+              >
+                {t.admin.settings.general}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSection('contacts')}
+                className={menuButtonClass('contacts')}
+              >
+                {t.admin.settings.contacts}
+              </button>
             </div>
           </div>
 
           <div>
-            <p className="mb-2 text-xs uppercase tracking-wide text-foreground/50">{t.admin.settings.menuAccess}</p>
+            <p className="mb-2 text-xs uppercase tracking-wide text-foreground/50">
+              {t.admin.settings.menuAccess}
+            </p>
             <div className="space-y-1">
-              <button type="button" onClick={() => setActiveSection('registration')} className={menuButtonClass('registration')}>{t.admin.settings.registration}</button>
-              <button type="button" onClick={() => setActiveSection('maintenance')} className={menuButtonClass('maintenance')}>{t.admin.settings.maintenance}</button>
+              <button
+                type="button"
+                onClick={() => setActiveSection('registration')}
+                className={menuButtonClass('registration')}
+              >
+                {t.admin.settings.registration}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSection('maintenance')}
+                className={menuButtonClass('maintenance')}
+              >
+                {t.admin.settings.maintenance}
+              </button>
             </div>
           </div>
 
           <div>
-            <p className="mb-2 text-xs uppercase tracking-wide text-foreground/50">{t.admin.settings.menuIntegrations}</p>
+            <p className="mb-2 text-xs uppercase tracking-wide text-foreground/50">
+              {t.admin.settings.menuIntegrations}
+            </p>
             <div className="space-y-1">
-              <button type="button" onClick={() => setActiveSection('ai')} className={menuButtonClass('ai')}>{t.admin.settings.aiTranslation}</button>
+              <button
+                type="button"
+                onClick={() => setActiveSection('ai')}
+                className={menuButtonClass('ai')}
+              >
+                {t.admin.settings.aiTranslation}
+              </button>
             </div>
           </div>
         </nav>
@@ -171,14 +215,34 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
             >
               <h3 className="text-lg font-semibold">{t.admin.settings.general}</h3>
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="app-name">{t.admin.settings.appName}</label>
-                <input id="app-name" value={appName} onChange={(e) => setAppName(e.target.value)} className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="app-name">
+                  {t.admin.settings.appName}
+                </label>
+                <input
+                  id="app-name"
+                  value={appName}
+                  onChange={(e) => setAppName(e.target.value)}
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="app-slogan">{t.admin.settings.appSlogan}</label>
-                <input id="app-slogan" value={appSlogan} onChange={(e) => setAppSlogan(e.target.value)} className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="app-slogan">
+                  {t.admin.settings.appSlogan}
+                </label>
+                <input
+                  id="app-slogan"
+                  value={appSlogan}
+                  onChange={(e) => setAppSlogan(e.target.value)}
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
-              <button type="submit" disabled={isSaving('general')} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60">{isSaving('general') ? t.profile.saving : t.admin.settings.save}</button>
+              <button
+                type="submit"
+                disabled={isSaving('general')}
+                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60"
+              >
+                {isSaving('general') ? t.profile.saving : t.admin.settings.save}
+              </button>
             </form>
           )}
 
@@ -196,18 +260,48 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
             >
               <h3 className="text-lg font-semibold">{t.admin.settings.contacts}</h3>
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="contact-email">{t.admin.settings.contactEmail}</label>
-                <input id="contact-email" type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="contact-email">
+                  {t.admin.settings.contactEmail}
+                </label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="privacy-url">{t.admin.settings.privacyUrl}</label>
-                <input id="privacy-url" value={privacyUrl} onChange={(e) => setPrivacyUrl(e.target.value)} placeholder="https://example.com/privacy" className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="privacy-url">
+                  {t.admin.settings.privacyUrl}
+                </label>
+                <input
+                  id="privacy-url"
+                  value={privacyUrl}
+                  onChange={(e) => setPrivacyUrl(e.target.value)}
+                  placeholder="https://example.com/privacy"
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="terms-url">{t.admin.settings.termsUrl}</label>
-                <input id="terms-url" value={termsUrl} onChange={(e) => setTermsUrl(e.target.value)} placeholder="https://example.com/terms" className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="terms-url">
+                  {t.admin.settings.termsUrl}
+                </label>
+                <input
+                  id="terms-url"
+                  value={termsUrl}
+                  onChange={(e) => setTermsUrl(e.target.value)}
+                  placeholder="https://example.com/terms"
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
-              <button type="submit" disabled={isSaving('contacts')} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60">{isSaving('contacts') ? t.profile.saving : t.admin.settings.save}</button>
+              <button
+                type="submit"
+                disabled={isSaving('contacts')}
+                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60"
+              >
+                {isSaving('contacts') ? t.profile.saving : t.admin.settings.save}
+              </button>
             </form>
           )}
 
@@ -223,13 +317,28 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
             >
               <h3 className="text-lg font-semibold">{t.admin.settings.registration}</h3>
               <label className="flex items-start gap-3 rounded-lg border border-black/10 p-3 dark:border-white/10">
-                <input type="checkbox" checked={allowRegistration} onChange={(e) => setAllowRegistration(e.target.checked)} className="mt-1 h-4 w-4" />
+                <input
+                  type="checkbox"
+                  checked={allowRegistration}
+                  onChange={(e) => setAllowRegistration(e.target.checked)}
+                  className="mt-1 h-4 w-4"
+                />
                 <span>
-                  <span className="block text-sm font-medium">{t.admin.settings.allowRegistration}</span>
-                  <span className="block text-xs text-foreground/60">{t.admin.settings.allowRegistrationHint}</span>
+                  <span className="block text-sm font-medium">
+                    {t.admin.settings.allowRegistration}
+                  </span>
+                  <span className="block text-xs text-foreground/60">
+                    {t.admin.settings.allowRegistrationHint}
+                  </span>
                 </span>
               </label>
-              <button type="submit" disabled={isSaving('registration')} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60">{isSaving('registration') ? t.profile.saving : t.admin.settings.save}</button>
+              <button
+                type="submit"
+                disabled={isSaving('registration')}
+                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60"
+              >
+                {isSaving('registration') ? t.profile.saving : t.admin.settings.save}
+              </button>
             </form>
           )}
 
@@ -248,10 +357,19 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
             >
               <h3 className="text-lg font-semibold">{t.admin.settings.maintenance}</h3>
               <label className="flex items-start gap-3 rounded-lg border border-black/10 p-3 dark:border-white/10">
-                <input type="checkbox" checked={maintenanceEnabled} onChange={(e) => setMaintenanceEnabled(e.target.checked)} className="mt-1 h-4 w-4" />
+                <input
+                  type="checkbox"
+                  checked={maintenanceEnabled}
+                  onChange={(e) => setMaintenanceEnabled(e.target.checked)}
+                  className="mt-1 h-4 w-4"
+                />
                 <span>
-                  <span className="block text-sm font-medium">{t.admin.settings.enableMaintenance}</span>
-                  <span className="block text-xs text-foreground/60">{t.admin.settings.enableMaintenanceHint}</span>
+                  <span className="block text-sm font-medium">
+                    {t.admin.settings.enableMaintenance}
+                  </span>
+                  <span className="block text-xs text-foreground/60">
+                    {t.admin.settings.enableMaintenanceHint}
+                  </span>
                 </span>
               </label>
 
@@ -262,28 +380,61 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
               )}
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="maintenance-title">{t.admin.settings.maintenanceTitle}</label>
-                <input id="maintenance-title" value={maintenanceTitle} onChange={(e) => setMaintenanceTitle(e.target.value)} className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="maintenance-title">
+                  {t.admin.settings.maintenanceTitle}
+                </label>
+                <input
+                  id="maintenance-title"
+                  value={maintenanceTitle}
+                  onChange={(e) => setMaintenanceTitle(e.target.value)}
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="maintenance-message">{t.admin.settings.maintenanceMessage}</label>
-                <textarea id="maintenance-message" value={maintenanceMessage} onChange={(e) => setMaintenanceMessage(e.target.value)} rows={4} className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="maintenance-message">
+                  {t.admin.settings.maintenanceMessage}
+                </label>
+                <textarea
+                  id="maintenance-message"
+                  value={maintenanceMessage}
+                  onChange={(e) => setMaintenanceMessage(e.target.value)}
+                  rows={4}
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="maintenance-eta">{t.admin.settings.maintenanceEta}</label>
-                <input id="maintenance-eta" value={maintenanceEta} onChange={(e) => setMaintenanceEta(e.target.value)} placeholder={t.admin.settings.maintenanceEtaPlaceholder} className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15" />
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="maintenance-eta">
+                  {t.admin.settings.maintenanceEta}
+                </label>
+                <input
+                  id="maintenance-eta"
+                  value={maintenanceEta}
+                  onChange={(e) => setMaintenanceEta(e.target.value)}
+                  placeholder={t.admin.settings.maintenanceEtaPlaceholder}
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                />
               </div>
 
               <div className="space-y-2 rounded-lg border border-black/10 bg-black/[0.02] p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                <p className="text-xs uppercase tracking-wide text-foreground/60">{t.admin.settings.preview}</p>
+                <p className="text-xs uppercase tracking-wide text-foreground/60">
+                  {t.admin.settings.preview}
+                </p>
                 <h4 className="text-lg font-semibold">{previewTitle}</h4>
                 <p className="whitespace-pre-wrap text-sm text-foreground/80">{previewMessage}</p>
-                {maintenanceEta.trim() && <p className="text-sm text-foreground/60">{maintenanceEta}</p>}
+                {maintenanceEta.trim() && (
+                  <p className="text-sm text-foreground/60">{maintenanceEta}</p>
+                )}
               </div>
 
-              <button type="submit" disabled={isSaving('maintenance')} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60">{isSaving('maintenance') ? t.profile.saving : t.admin.settings.save}</button>
+              <button
+                type="submit"
+                disabled={isSaving('maintenance')}
+                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60"
+              >
+                {isSaving('maintenance') ? t.profile.saving : t.admin.settings.save}
+              </button>
             </form>
           )}
 
@@ -307,15 +458,26 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
               <p className="text-sm text-foreground/60">{t.admin.settings.aiHint}</p>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="ai-provider">{t.admin.settings.aiProvider}</label>
-                <select id="ai-provider" value={aiProvider} onChange={(e) => setAiProvider(e.target.value === 'openai' ? 'openai' : 'anthropic')} className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15">
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="ai-provider">
+                  {t.admin.settings.aiProvider}
+                </label>
+                <select
+                  id="ai-provider"
+                  value={aiProvider}
+                  onChange={(e) =>
+                    setAiProvider(e.target.value === 'openai' ? 'openai' : 'anthropic')
+                  }
+                  className="w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
+                >
                   <option value="anthropic">{t.admin.settings.providerAnthropic}</option>
                   <option value="openai">{t.admin.settings.providerOpenai}</option>
                 </select>
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium" htmlFor="ai-api-key">{t.admin.settings.aiApiKey}</label>
+                <label className="mb-1.5 block text-sm font-medium" htmlFor="ai-api-key">
+                  {t.admin.settings.aiApiKey}
+                </label>
                 <div className="flex items-center gap-2">
                   <input
                     id="ai-api-key"
@@ -328,21 +490,50 @@ export default function AdminSettingsClient({ initialSettings }: Props) {
                     placeholder={maskedApiKey || 'sk-ant-...'}
                     className="min-w-0 flex-1 rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm dark:border-white/15"
                   />
-                  <button type="button" onClick={() => setShowApiKey((value) => !value)} className="rounded-lg border border-black/15 px-3 py-2 text-sm dark:border-white/15">{showApiKey ? t.admin.settings.hide : t.admin.settings.show}</button>
-                  <button type="button" onClick={() => void verifyApiKey()} disabled={verifyState === 'checking'} className="rounded-lg border border-black/15 px-4 py-2 text-sm font-medium dark:border-white/15 disabled:opacity-60">{verifyState === 'checking' ? t.profile.saving : t.admin.settings.verify}</button>
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey((value) => !value)}
+                    className="rounded-lg border border-black/15 px-3 py-2 text-sm dark:border-white/15"
+                  >
+                    {showApiKey ? t.admin.settings.hide : t.admin.settings.show}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void verifyApiKey()}
+                    disabled={verifyState === 'checking'}
+                    className="rounded-lg border border-black/15 px-4 py-2 text-sm font-medium dark:border-white/15 disabled:opacity-60"
+                  >
+                    {verifyState === 'checking' ? t.profile.saving : t.admin.settings.verify}
+                  </button>
                 </div>
-                {maskedApiKey && <p className="mt-1 text-xs text-foreground/60">{t.admin.settings.currentKey}: {maskedApiKey}</p>}
+                {maskedApiKey && (
+                  <p className="mt-1 text-xs text-foreground/60">
+                    {t.admin.settings.currentKey}: {maskedApiKey}
+                  </p>
+                )}
                 {verifyState !== 'idle' && (
-                  <p className={`mt-2 text-sm ${verifyState === 'valid' ? 'text-emerald-600' : verifyState === 'invalid' ? 'text-red-600' : 'text-foreground/60'}`}>{verifyLabel}</p>
+                  <p
+                    className={`mt-2 text-sm ${verifyState === 'valid' ? 'text-emerald-600' : verifyState === 'invalid' ? 'text-red-600' : 'text-foreground/60'}`}
+                  >
+                    {verifyLabel}
+                  </p>
                 )}
               </div>
 
-              <button type="submit" disabled={isSaving('ai')} className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60">{isSaving('ai') ? t.profile.saving : t.admin.settings.save}</button>
+              <button
+                type="submit"
+                disabled={isSaving('ai')}
+                className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-60"
+              >
+                {isSaving('ai') ? t.profile.saving : t.admin.settings.save}
+              </button>
             </form>
           )}
 
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-          {savedSection === activeSection && <p className="mt-4 text-sm text-emerald-600">{t.admin.settings.saved}</p>}
+          {savedSection === activeSection && (
+            <p className="mt-4 text-sm text-emerald-600">{t.admin.settings.saved}</p>
+          )}
         </div>
       </div>
     </div>
