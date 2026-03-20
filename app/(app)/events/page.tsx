@@ -11,7 +11,11 @@ type EventRow = {
 }
 
 export default async function EventsPage() {
-  const [supabase, user, { t, locale }] = await Promise.all([createClient(), getAuthUser(), getServerT()])
+  const [supabase, user, { t, locale }] = await Promise.all([
+    createClient(),
+    getAuthUser(),
+    getServerT(),
+  ])
 
   const groups = await fetchUserGroupsByMembership(supabase, user!.id)
   const groupIds = groups.map((group) => group.id)
@@ -35,28 +39,30 @@ export default async function EventsPage() {
       {events.length === 0 ? (
         <div className="text-center py-16 border border-black/10 dark:border-white/10 rounded-2xl">
           <p className="text-sm text-foreground/60 mb-3">{t.dashboard.noEvents}</p>
-          <Link
-            href="/groups"
-            className="text-sm font-medium underline-offset-2 hover:underline"
-          >
+          <Link href="/groups" className="text-sm font-medium underline-offset-2 hover:underline">
             {t.dashboard.createGroup}
           </Link>
         </div>
       ) : (
         <div className="space-y-2">
           {events.map((event) => (
-            <div
+            <Link
               key={event.id}
-              className="p-4 rounded-2xl border border-black/10 dark:border-white/10"
+              href={`/events/${event.id}`}
+              className="block p-4 rounded-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition"
             >
               <p className="font-medium">{event.name}</p>
               {event.date ? (
                 <p className="text-xs text-foreground/50 mt-1">
-                  {new Date(event.date).toLocaleDateString(locale || 'uk-UA', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {new Date(event.date).toLocaleDateString(locale || 'uk-UA', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
                 </p>
               ) : null}
               <p className="text-xs text-foreground/40 mt-1">{event.status}</p>
-            </div>
+            </Link>
           ))}
         </div>
       )}

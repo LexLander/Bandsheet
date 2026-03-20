@@ -50,6 +50,17 @@ type TranslationTree = {
     active: string
     groups: (n: number) => string
   }
+  events: {
+    back: string
+    noSetlist: string
+    setlist: string
+    statusDraft: string
+    statusActive: string
+    statusArchived: string
+    key: string
+    noDate: string
+    noVenue: string
+  }
   library: {
     title: string
     searchPlaceholder: string
@@ -414,7 +425,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       myGroups: 'Мої групи',
       library: 'Бібліотека',
       mySongs: 'Мої пісні',
-      libraryPreparing: 'Інструменти бібліотеки готуються. Ви вже можете керувати групами та подіями.',
+      libraryPreparing:
+        'Інструменти бібліотеки готуються. Ви вже можете керувати групами та подіями.',
       events: 'Події',
       concerts: 'Концерти',
       profile: 'Профіль',
@@ -424,6 +436,17 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       createGroup: 'Створити групу →',
       active: 'Активна',
       groups: (n) => `${n} груп`,
+    },
+    events: {
+      back: '← Події',
+      noSetlist: 'Сетліст ще не сформовано',
+      setlist: 'Сетліст',
+      statusDraft: 'Чернетка',
+      statusActive: 'Активна',
+      statusArchived: 'Архів',
+      key: 'Тональність',
+      noDate: 'Дата не вказана',
+      noVenue: 'Місце не вказано',
     },
     library: {
       title: 'Бібліотека',
@@ -521,7 +544,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordPlaceholder: 'мінімум 6 символів',
       registerSubmitting: 'Реєструю...',
       registerSubmit: 'Створити акаунт',
-      registerDuplicateEmail: 'Цей email вже зареєстрований. Якщо це ваш акаунт, спробуйте увійти або відновити пароль.',
+      registerDuplicateEmail:
+        'Цей email вже зареєстрований. Якщо це ваш акаунт, спробуйте увійти або відновити пароль.',
       hasAccount: 'Вже є акаунт?',
       loginLink: 'Увійти',
       forgotTitle: 'Відновлення пароля',
@@ -531,7 +555,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       forgotSubmit: 'Надіслати посилання',
       backToLogin: 'Повернутися до входу',
       checkEmailTitle: 'Перевір пошту',
-      checkEmailDescription: 'Ми надіслали посилання для підтвердження на твій email. Натисни на нього, щоб активувати акаунт.',
+      checkEmailDescription:
+        'Ми надіслали посилання для підтвердження на твій email. Натисни на нього, щоб активувати акаунт.',
       checkEmailConfirmed: 'Вже підтвердив?',
       resetTitle: 'Новий пароль',
       resetDescription: 'Введіть новий пароль для вашого акаунту.',
@@ -577,12 +602,14 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       },
       verifyDevice: {
         title: 'Підтвердження входу адміністратора',
-        description: 'Це другий крок авторизації. Введіть код безпеки, після чого пристрій буде збережений як довірений.',
+        description:
+          'Це другий крок авторизації. Введіть код безпеки, після чого пристрій буде збережений як довірений.',
         codePlaceholder: 'Код другого кроку',
         submit: 'Підтвердити пристрій',
         errors: {
           invalidCode: 'Невірний код другого кроку. Спробуйте ще раз.',
-          config: 'Код другого кроку не налаштовано на сервері. Зверніться до адміністратора системи.',
+          config:
+            'Код другого кроку не налаштовано на сервері. Зверніться до адміністратора системи.',
           deviceSaveFailed: 'Не вдалося підтвердити пристрій. Спробуйте ще раз пізніше.',
           fallback: 'Сталася помилка. Спробуйте ще раз.',
         },
@@ -624,7 +651,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       },
       i18n: {
         pageTitle: 'Мови і переклади',
-        pageDescription: 'Формат: одна змінна (`app.nav.users`) і багато перекладів за мовами. Можна додавати, вимикати і видаляти мови, змінні та окремі переклади.',
+        pageDescription:
+          'Формат: одна змінна (`app.nav.users`) і багато перекладів за мовами. Можна додавати, вимикати і видаляти мови, змінні та окремі переклади.',
         fallbackSuccess: 'Операцію виконано',
         fallbackError: 'Сталася помилка',
         loadingLanguages: 'Завантаження мов...',
@@ -787,7 +815,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       myGroups: 'Мои группы',
       library: 'Библиотека',
       mySongs: 'Мои песни',
-      libraryPreparing: 'Инструменты библиотеки готовятся. Вы уже можете управлять группами и событиями.',
+      libraryPreparing:
+        'Инструменты библиотеки готовятся. Вы уже можете управлять группами и событиями.',
       events: 'События',
       concerts: 'Концерты',
       profile: 'Профиль',
@@ -797,6 +826,17 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       createGroup: 'Создать группу →',
       active: 'Активно',
       groups: (n) => `${n} групп`,
+    },
+    events: {
+      back: '← События',
+      noSetlist: 'Сетлист ещё не сформирован',
+      setlist: 'Сетлист',
+      statusDraft: 'Черновик',
+      statusActive: 'Активно',
+      statusArchived: 'Архив',
+      key: 'Тональность',
+      noDate: 'Дата не указана',
+      noVenue: 'Место не указано',
     },
     library: {
       title: 'Библиотека',
@@ -866,7 +906,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         send: 'Отправить приглашение',
         cancel: 'Отменить',
         cancelling: 'Отменяю...',
-        cancelConfirm: 'Отменить это приглашение? После этого человек не сможет присоединиться по нему.',
+        cancelConfirm:
+          'Отменить это приглашение? После этого человек не сможет присоединиться по нему.',
       },
     },
     auth: {
@@ -894,7 +935,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordPlaceholder: 'минимум 6 символов',
       registerSubmitting: 'Регистрирую...',
       registerSubmit: 'Создать аккаунт',
-      registerDuplicateEmail: 'Этот email уже зарегистрирован. Если это ваш аккаунт, попробуйте войти или восстановить пароль.',
+      registerDuplicateEmail:
+        'Этот email уже зарегистрирован. Если это ваш аккаунт, попробуйте войти или восстановить пароль.',
       hasAccount: 'Уже есть аккаунт?',
       loginLink: 'Войти',
       forgotTitle: 'Восстановление пароля',
@@ -904,7 +946,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       forgotSubmit: 'Отправить ссылку',
       backToLogin: 'Вернуться ко входу',
       checkEmailTitle: 'Проверьте почту',
-      checkEmailDescription: 'Мы отправили ссылку для подтверждения на ваш email. Нажмите на нее, чтобы активировать аккаунт.',
+      checkEmailDescription:
+        'Мы отправили ссылку для подтверждения на ваш email. Нажмите на нее, чтобы активировать аккаунт.',
       checkEmailConfirmed: 'Уже подтвердили?',
       resetTitle: 'Новый пароль',
       resetDescription: 'Введите новый пароль для вашего аккаунта.',
@@ -950,7 +993,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       },
       verifyDevice: {
         title: 'Подтверждение входа администратора',
-        description: 'Это второй шаг авторизации. Введите код безопасности, после чего устройство будет сохранено как доверенное.',
+        description:
+          'Это второй шаг авторизации. Введите код безопасности, после чего устройство будет сохранено как доверенное.',
         codePlaceholder: 'Код второго шага',
         submit: 'Подтвердить устройство',
         errors: {
@@ -997,7 +1041,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       },
       i18n: {
         pageTitle: 'Языки и переводы',
-        pageDescription: 'Формат: одна переменная (`app.nav.users`) и множество переводов по языкам. Можно добавлять, отключать и удалять языки, переменные и отдельные переводы.',
+        pageDescription:
+          'Формат: одна переменная (`app.nav.users`) и множество переводов по языкам. Можно добавлять, отключать и удалять языки, переменные и отдельные переводы.',
         fallbackSuccess: 'Операция выполнена',
         fallbackError: 'Произошла ошибка',
         loadingLanguages: 'Загрузка языков...',
@@ -1084,7 +1129,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       },
       settings: {
         title: 'Настройки сайта',
-        description: 'Управляйте глобальными параметрами проекта, которые отображаются на всём сайте.',
+        description:
+          'Управляйте глобальными параметрами проекта, которые отображаются на всём сайте.',
         menuSite: 'Site',
         menuAccess: 'Access',
         menuIntegrations: 'Integrations',
@@ -1160,7 +1206,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       myGroups: 'My groups',
       library: 'Library',
       mySongs: 'My songs',
-      libraryPreparing: 'Library tools are being prepared. You can already manage groups and events.',
+      libraryPreparing:
+        'Library tools are being prepared. You can already manage groups and events.',
       events: 'Events',
       concerts: 'Concerts',
       profile: 'Profile',
@@ -1170,6 +1217,17 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       createGroup: 'Create a group →',
       active: 'Active',
       groups: (n) => `${n} groups`,
+    },
+    events: {
+      back: '← Events',
+      noSetlist: 'No setlist created for this event',
+      setlist: 'Setlist',
+      statusDraft: 'Draft',
+      statusActive: 'Active',
+      statusArchived: 'Archived',
+      key: 'Key',
+      noDate: 'Date not set',
+      noVenue: 'Venue not set',
     },
     library: {
       title: 'Library',
@@ -1239,7 +1297,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         send: 'Send invitation',
         cancel: 'Cancel',
         cancelling: 'Cancelling...',
-        cancelConfirm: 'Cancel this invitation? After that, the person will not be able to join with it.',
+        cancelConfirm:
+          'Cancel this invitation? After that, the person will not be able to join with it.',
       },
     },
     auth: {
@@ -1267,7 +1326,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       passwordPlaceholder: 'at least 6 characters',
       registerSubmitting: 'Signing up...',
       registerSubmit: 'Create account',
-      registerDuplicateEmail: 'This email is already registered. If this is your account, try signing in or resetting your password.',
+      registerDuplicateEmail:
+        'This email is already registered. If this is your account, try signing in or resetting your password.',
       hasAccount: 'Already have an account?',
       loginLink: 'Sign in',
       forgotTitle: 'Password recovery',
@@ -1277,7 +1337,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       forgotSubmit: 'Send link',
       backToLogin: 'Back to sign in',
       checkEmailTitle: 'Check your email',
-      checkEmailDescription: 'We sent a confirmation link to your email. Click it to activate your account.',
+      checkEmailDescription:
+        'We sent a confirmation link to your email. Click it to activate your account.',
       checkEmailConfirmed: 'Already confirmed?',
       resetTitle: 'New password',
       resetDescription: 'Enter a new password for your account.',
@@ -1323,12 +1384,14 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       },
       verifyDevice: {
         title: 'Admin sign-in verification',
-        description: 'This is the second authorization step. Enter the security code, then this device will be saved as trusted.',
+        description:
+          'This is the second authorization step. Enter the security code, then this device will be saved as trusted.',
         codePlaceholder: 'Second-step code',
         submit: 'Verify device',
         errors: {
           invalidCode: 'Invalid second-step code. Please try again.',
-          config: 'Second-step code is not configured on the server. Contact your system administrator.',
+          config:
+            'Second-step code is not configured on the server. Contact your system administrator.',
           deviceSaveFailed: 'Failed to verify the device. Please try again later.',
           fallback: 'Something went wrong. Please try again.',
         },
@@ -1370,7 +1433,8 @@ export const translations: Record<StaticLocale, TranslationTree> = {
       },
       i18n: {
         pageTitle: 'Languages & Translations',
-        pageDescription: 'Format: one variable (`app.nav.users`) and many translations by language. You can add, disable, and delete languages, variables, and individual translations.',
+        pageDescription:
+          'Format: one variable (`app.nav.users`) and many translations by language. You can add, disable, and delete languages, variables, and individual translations.',
         fallbackSuccess: 'Operation completed',
         fallbackError: 'Something went wrong',
         loadingLanguages: 'Loading languages...',

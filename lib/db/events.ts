@@ -41,11 +41,7 @@ export async function fetchEventById(
   supabase: SupabaseClient,
   eventId: string
 ): Promise<Event | null> {
-  const { data, error } = await supabase
-    .from('events')
-    .select('*')
-    .eq('id', eventId)
-    .single()
+  const { data, error } = await supabase.from('events').select('*').eq('id', eventId).single()
 
   if (error) return null
   return data
@@ -68,16 +64,37 @@ export async function fetchEventWithSetlist(
 
   if (!setlist) return { event, setlist: null, items: [] }
 
-  // Отримуємо пісні сетлісту з JOIN
-  const { data: items, error } = await supabase
+  // Отримуємо пісні сетлісту без relation-join (song_id без FK до songs_public)
+  const { data: rawItems, error: itemsError } = await supabase
     .from('setlist_items')
-    .select('*, song:songs_public(id, title, artist, key)')
+    .select('*')
     .eq('setlist_id', setlist.id)
     .order('position')
 
-  if (error) throw error
+  if (itemsError) throw itemsError
 
-  return { event, setlist, items: items ?? [] }
+  const songIds = Array.from(new Set((rawItems ?? []).map((item) => item.song_id))).filter(Boolean)
+
+  let songsById = new Map<
+    string,
+    { id: string; title: string; artist: string | null; key: string | null }
+  >()
+  if (songIds.length > 0) {
+    const { data: songs, error: songsError } = await supabase
+      .from('songs_public')
+      .select('id, title, artist, key')
+      .in('id', songIds)
+
+    if (songsError) throw songsError
+    songsById = new Map((songs ?? []).map((song) => [song.id, song]))
+  }
+
+  const items: SetlistItem[] = (rawItems ?? []).map((item) => ({
+    ...item,
+    song: songsById.get(item.song_id),
+  }))
+
+  return { event, setlist, items }
 }
 
 // Список подій групи

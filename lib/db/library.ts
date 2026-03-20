@@ -15,19 +15,38 @@ export type LibraryItem = {
   song?: Song
 }
 
-// Особиста бібліотека користувача з даними пісень
+// Особиста бібліотека користувача з даними пісень.
+// Не використовуємо relation-join через PostgREST, бо song_id тут без FK до songs_public.
 export async function fetchLibraryItems(
   supabase: SupabaseClient,
   userId: string
 ): Promise<LibraryItem[]> {
-  const { data, error } = await supabase
+  const { data: items, error: itemsError } = await supabase
     .from('library_items')
-    .select('*, song:songs_public(id, title, artist, text_chords, key, bpm, time_signature, language, genre, access_type, created_at)')
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
 
-  if (error) throw error
-  return data ?? []
+  if (itemsError) throw itemsError
+  if (!items || items.length === 0) return []
+
+  const songIds = Array.from(new Set(items.map((item) => item.song_id))).filter(Boolean)
+  if (songIds.length === 0) return items
+
+  const { data: songs, error: songsError } = await supabase
+    .from('songs_public')
+    .select(
+      'id, title, artist, text_chords, key, bpm, time_signature, language, genre, access_type, created_at'
+    )
+    .in('id', songIds)
+
+  if (songsError) throw songsError
+
+  const songsById = new Map((songs ?? []).map((song) => [song.id, song]))
+  return items.map((item) => ({
+    ...item,
+    song: songsById.get(item.song_id),
+  }))
 }
 
 // Додати пісню до бібліотеки
