@@ -31,10 +31,12 @@ export function AddToLibraryButton({
 }: AddProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function onAdd() {
     if (isAdded) return
 
+    setError(null)
     setLoading(true)
     const response = await fetch('/api/library', {
       method: 'POST',
@@ -44,7 +46,7 @@ export function AddToLibraryButton({
     setLoading(false)
 
     if (!response.ok) {
-      window.alert(errorLabel)
+      setError(errorLabel)
       return
     }
 
@@ -52,14 +54,21 @@ export function AddToLibraryButton({
   }
 
   return (
-    <button
-      type="button"
-      disabled={isAdded || loading}
-      onClick={onAdd}
-      className="px-3 py-1.5 rounded-lg border border-black/15 dark:border-white/15 text-xs disabled:opacity-60"
-    >
-      {loading ? pendingLabel : isAdded ? addedLabel : addLabel}
-    </button>
+    <div className="space-y-1">
+      <button
+        type="button"
+        disabled={isAdded || loading}
+        onClick={onAdd}
+        className="px-3 py-1.5 rounded-lg border border-black/15 dark:border-white/15 text-xs disabled:opacity-60"
+      >
+        {loading ? pendingLabel : isAdded ? addedLabel : addLabel}
+      </button>
+      {error ? (
+        <p role="alert" className="text-[11px] text-red-600">
+          {error}
+        </p>
+      ) : null}
+    </div>
   )
 }
 
@@ -71,8 +80,10 @@ export function RemoveFromLibraryButton({
 }: RemoveProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function onRemove() {
+    setError(null)
     setLoading(true)
     const response = await fetch(`/api/library/${encodeURIComponent(itemId)}`, {
       method: 'DELETE',
@@ -80,7 +91,7 @@ export function RemoveFromLibraryButton({
     setLoading(false)
 
     if (!response.ok) {
-      window.alert(errorLabel)
+      setError(errorLabel)
       return
     }
 
@@ -88,13 +99,20 @@ export function RemoveFromLibraryButton({
   }
 
   return (
-    <button
-      type="button"
-      disabled={loading}
-      onClick={onRemove}
-      className="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 disabled:opacity-60"
-    >
-      {loading ? pendingLabel : removeLabel}
-    </button>
+    <div className="space-y-1">
+      <button
+        type="button"
+        disabled={loading}
+        onClick={onRemove}
+        className="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 disabled:opacity-60"
+      >
+        {loading ? pendingLabel : removeLabel}
+      </button>
+      {error ? (
+        <p role="alert" className="text-[11px] text-red-600">
+          {error}
+        </p>
+      ) : null}
+    </div>
   )
 }
