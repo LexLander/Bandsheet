@@ -2,7 +2,11 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { applyTranslationOverrides, getStaticLanguageList, type RuntimeLanguage } from '@/lib/i18n/runtime'
+import {
+  applyTranslationOverrides,
+  getStaticLanguageList,
+  type RuntimeLanguage,
+} from '@/lib/i18n/runtime'
 import { defaultLocale, normalizeLocale, type Locale } from '@/lib/i18n/translations'
 
 type LanguageContextValue = {
@@ -23,7 +27,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return defaultLocale
   })
   const [languages, setLanguages] = useState<RuntimeLanguage[]>(() => getStaticLanguageList())
-  const [t, setT] = useState(() => applyTranslationOverrides(locale, []))
+  const [t, setT] = useState(() => applyTranslationOverrides(locale, [])) // applyTranslationOverrides вже повертає TranslationTree
 
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -60,9 +64,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
         if (!active) return
 
-        const nextLanguages = data.languages && data.languages.length > 0
-          ? data.languages
-          : getStaticLanguageList()
+        const nextLanguages =
+          data.languages && data.languages.length > 0 ? data.languages : getStaticLanguageList()
 
         setLanguages(nextLanguages)
         setT(applyTranslationOverrides(locale, data.overrides ?? []))
@@ -91,13 +94,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       .then((r) => (r.ok ? r.json() : null))
       .then((data: { languages?: RuntimeLanguage[] } | null) => {
         if (!active || !data) return
-        const next = data.languages && data.languages.length > 0
-          ? data.languages
-          : getStaticLanguageList()
+        const next =
+          data.languages && data.languages.length > 0 ? data.languages : getStaticLanguageList()
         setLanguages(next)
       })
       .catch(() => {})
-    return () => { active = false }
+    return () => {
+      active = false
+    }
   }, [pathname, searchParams, locale])
 
   // If current locale got disabled, move user to the first available locale.

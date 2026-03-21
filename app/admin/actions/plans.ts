@@ -19,8 +19,10 @@ export async function createPlan(_prevState: FormState, formData: FormData): Pro
     const priceMonthly = parseFloat((formData.get('price_monthly') as string) || '0') || 0
     const priceYearly = parseFloat((formData.get('price_yearly') as string) || '0') || null
     const firstMonthPrice = parseFloat((formData.get('first_month_price') as string) || '0') || null
-    const trialDays = parseInt((formData.get('trial_days') as string) || '0') || 0
-    const sortOrder = parseInt((formData.get('sort_order') as string) || '0') || 0
+    const trialDaysRaw = formData.get('trial_days') as string
+    const sortOrderRaw = formData.get('sort_order') as string
+    const trialDays = isNaN(parseInt(trialDaysRaw)) ? 0 : parseInt(trialDaysRaw)
+    const sortOrder = isNaN(parseInt(sortOrderRaw)) ? 0 : parseInt(sortOrderRaw)
     const isActive = formData.get('is_active') === 'on'
     const isFree = formData.get('is_free') === 'on'
 
@@ -89,8 +91,10 @@ export async function updatePlan(_prevState: FormState, formData: FormData): Pro
     const priceMonthly = parseFloat((formData.get('price_monthly') as string) || '0') || 0
     const priceYearly = parseFloat((formData.get('price_yearly') as string) || '0') || null
     const firstMonthPrice = parseFloat((formData.get('first_month_price') as string) || '0') || null
-    const trialDays = parseInt((formData.get('trial_days') as string) || '0') || 0
-    const sortOrder = parseInt((formData.get('sort_order') as string) || '0') || 0
+    const trialDaysRaw = formData.get('trial_days') as string
+    const sortOrderRaw = formData.get('sort_order') as string
+    const trialDays = isNaN(parseInt(trialDaysRaw)) ? 0 : parseInt(trialDaysRaw)
+    const sortOrder = isNaN(parseInt(sortOrderRaw)) ? 0 : parseInt(sortOrderRaw)
     const isActive = formData.get('is_active') === 'on'
     // Protect is_free for free plans
     const isFree = existingPlan.is_free ? true : formData.get('is_free') === 'on'
