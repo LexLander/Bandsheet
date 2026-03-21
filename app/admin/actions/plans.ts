@@ -14,23 +14,33 @@ export async function createPlan(_prevState: FormState, formData: FormData): Pro
     const { actor, admin } = await getAdminContext()
     const { t } = await getServerT()
 
+    const parsePrice = (val: FormDataEntryValue | null): number | null => {
+      if (!val || val === '') return null
+      const n = Math.round(parseFloat(val as string) * 100) / 100
+      return isNaN(n) || n < 0 ? null : n
+    }
+    const parseInteger = (val: FormDataEntryValue | null, fallback = 0): number => {
+      if (!val || val === '') return fallback
+      const n = parseInt(val as string, 10)
+      return isNaN(n) ? fallback : n
+    }
+    const parseBool = (val: FormDataEntryValue | null): boolean => val === 'on'
+
     const name = (formData.get('name') as string | null)?.trim()
-    const description = (formData.get('description') as string | null)?.trim()
-    const priceMonthly = parseFloat((formData.get('price_monthly') as string) || '0') || 0
-    const priceYearly = parseFloat((formData.get('price_yearly') as string) || '0') || null
-    const firstMonthPrice = parseFloat((formData.get('first_month_price') as string) || '0') || null
-    const trialDaysRaw = formData.get('trial_days') as string
-    const sortOrderRaw = formData.get('sort_order') as string
-    const trialDays = isNaN(parseInt(trialDaysRaw)) ? 0 : parseInt(trialDaysRaw)
-    const sortOrder = isNaN(parseInt(sortOrderRaw)) ? 0 : parseInt(sortOrderRaw)
-    const isActive = formData.get('is_active') === 'on'
-    const isFree = formData.get('is_free') === 'on'
+    const description = (formData.get('description') as string | null)?.trim() || null
+    const priceMonthly = parsePrice(formData.get('price_monthly'))
+    const priceYearly = parsePrice(formData.get('price_yearly'))
+    const firstMonthPrice = parsePrice(formData.get('first_month_price'))
+    const trialDays = parseInteger(formData.get('trial_days'))
+    const sortOrder = parseInteger(formData.get('sort_order'))
+    const isActive = parseBool(formData.get('is_active'))
+    const isFree = parseBool(formData.get('is_free'))
 
     // Валидация
     if (!name) {
       return { error: t.admin.plans.fieldName + " обов'язковий", success: null }
     }
-    if (priceMonthly < 0) {
+    if (typeof priceMonthly === 'number' && priceMonthly < 0) {
       return { error: t.admin.plans.fieldPriceMonthly + " не може бути від'ємною", success: null }
     }
 
@@ -86,23 +96,33 @@ export async function updatePlan(_prevState: FormState, formData: FormData): Pro
       return { error: t.admin.plans.unknownError, success: null }
     }
 
+    const parsePrice = (val: FormDataEntryValue | null): number | null => {
+      if (!val || val === '') return null
+      const n = Math.round(parseFloat(val as string) * 100) / 100
+      return isNaN(n) || n < 0 ? null : n
+    }
+    const parseInteger = (val: FormDataEntryValue | null, fallback = 0): number => {
+      if (!val || val === '') return fallback
+      const n = parseInt(val as string, 10)
+      return isNaN(n) ? fallback : n
+    }
+    const parseBool = (val: FormDataEntryValue | null): boolean => val === 'on'
+
     const name = (formData.get('name') as string | null)?.trim()
-    const description = (formData.get('description') as string | null)?.trim()
-    const priceMonthly = parseFloat((formData.get('price_monthly') as string) || '0') || 0
-    const priceYearly = parseFloat((formData.get('price_yearly') as string) || '0') || null
-    const firstMonthPrice = parseFloat((formData.get('first_month_price') as string) || '0') || null
-    const trialDaysRaw = formData.get('trial_days') as string
-    const sortOrderRaw = formData.get('sort_order') as string
-    const trialDays = isNaN(parseInt(trialDaysRaw)) ? 0 : parseInt(trialDaysRaw)
-    const sortOrder = isNaN(parseInt(sortOrderRaw)) ? 0 : parseInt(sortOrderRaw)
-    const isActive = formData.get('is_active') === 'on'
+    const description = (formData.get('description') as string | null)?.trim() || null
+    const priceMonthly = parsePrice(formData.get('price_monthly'))
+    const priceYearly = parsePrice(formData.get('price_yearly'))
+    const firstMonthPrice = parsePrice(formData.get('first_month_price'))
+    const trialDays = parseInteger(formData.get('trial_days'))
+    const sortOrder = parseInteger(formData.get('sort_order'))
+    const isActive = parseBool(formData.get('is_active'))
     // Protect is_free for free plans
-    const isFree = existingPlan.is_free ? true : formData.get('is_free') === 'on'
+    const isFree = existingPlan.is_free ? true : parseBool(formData.get('is_free'))
 
     if (!name) {
       return { error: t.admin.plans.fieldName + " обов'язковий", success: null }
     }
-    if (priceMonthly < 0) {
+    if (typeof priceMonthly === 'number' && priceMonthly < 0) {
       return { error: t.admin.plans.fieldPriceMonthly + " не може бути від'ємною", success: null }
     }
 
