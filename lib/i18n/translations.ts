@@ -385,6 +385,47 @@ type TranslationTree = {
       save: string
       saved: string
     }
+    plans: {
+      title: string
+      description: string
+      navLabel: string
+      tableSort: string
+      tableName: string
+      tablePrice: string
+      tableYearlyPrice: string
+      tableFree: string
+      tableActive: string
+      tableTrialDays: string
+      tableActions: string
+      limitsSectionTitle: string
+      featuresSectionTitle: string
+      createTitle: string
+      editTitle: string
+      fieldName: string
+      fieldDescription: string
+      fieldPriceMonthly: string
+      fieldPriceYearly: string
+      fieldFirstMonthPrice: string
+      fieldTrialDays: string
+      fieldSortOrder: string
+      fieldIsActive: string
+      fieldIsFreePlan: string
+      limitInfinite: string
+      save: string
+      saving: string
+      create: string
+      creating: string
+      delete: string
+      deleteConfirm: string
+      successCreated: string
+      successUpdated: string
+      successDeleted: string
+      errorLoad: string
+      cannotDeleteFree: string
+      cannotDeleteHasUsers: string
+      valueInfiniteHint: string
+      unknownError: string
+    }
   }
 }
 
@@ -777,6 +818,47 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         save: 'Зберегти',
         saved: 'Збережено',
       },
+      plans: {
+        title: 'Тарифні плани',
+        description: 'Управління тарифами та ліцензіями',
+        navLabel: 'Плани',
+        tableSort: 'Порядок',
+        tableName: 'Назва',
+        tablePrice: 'Місячна ціна',
+        tableYearlyPrice: 'Річна ціна',
+        tableFree: 'Безкоштовний',
+        tableActive: 'Активний',
+        tableTrialDays: 'Пробних днів',
+        tableActions: 'Дії',
+        limitsSectionTitle: 'Ліміти',
+        featuresSectionTitle: 'Функції',
+        createTitle: 'Новий план',
+        editTitle: 'Редагувати план',
+        fieldName: 'Назва',
+        fieldDescription: 'Описание',
+        fieldPriceMonthly: 'Ціна за місяць',
+        fieldPriceYearly: 'Ціна за рік',
+        fieldFirstMonthPrice: 'Ціна першого місяця',
+        fieldTrialDays: 'Пробні дні',
+        fieldSortOrder: 'Порядок сортування',
+        fieldIsActive: 'Активний',
+        fieldIsFreePlan: 'Безкоштовний план',
+        limitInfinite: 'Безліміт',
+        save: 'Зберегти',
+        saving: 'Збереження...',
+        create: 'Створити план',
+        creating: 'Створюю план...',
+        delete: 'Видалити',
+        deleteConfirm: 'Видалити план?',
+        successCreated: 'План створено',
+        successUpdated: 'План оновлено',
+        successDeleted: 'План видалено',
+        errorLoad: 'Не вдалося завантажити плани',
+        cannotDeleteFree: 'Безкоштовний план не можна видалити',
+        cannotDeleteHasUsers: 'Неможливо видалити план — є активні користувачі',
+        valueInfiniteHint: 'Порожньо або -1 = безліміт',
+        unknownError: 'Сталася помилка',
+      },
     },
   },
   ru: {
@@ -1168,6 +1250,47 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         save: 'Сохранить',
         saved: 'Сохранено',
       },
+      plans: {
+        title: 'Тарифные планы',
+        description: 'Управление тарифами и лицензиями',
+        navLabel: 'Планы',
+        tableSort: 'Порядок',
+        tableName: 'Название',
+        tablePrice: 'Цена в месяц',
+        tableYearlyPrice: 'Цена в год',
+        tableFree: 'Бесплатный',
+        tableActive: 'Активный',
+        tableTrialDays: 'Пробные дни',
+        tableActions: 'Действия',
+        limitsSectionTitle: 'Ограничения',
+        featuresSectionTitle: 'Функции',
+        createTitle: 'Новый план',
+        editTitle: 'Редактировать план',
+        fieldName: 'Название',
+        fieldDescription: 'Описание',
+        fieldPriceMonthly: 'Цена в месяц',
+        fieldPriceYearly: 'Цена в год',
+        fieldFirstMonthPrice: 'Цена первого месяца',
+        fieldTrialDays: 'Пробные дни',
+        fieldSortOrder: 'Порядок сортировки',
+        fieldIsActive: 'Активный',
+        fieldIsFreePlan: 'Бесплатный план',
+        limitInfinite: 'Без ограничений',
+        save: 'Сохранить',
+        saving: 'Сохранение...',
+        create: 'Создать план',
+        creating: 'Создание плана...',
+        delete: 'Удалить',
+        deleteConfirm: 'Удалить план?',
+        successCreated: 'План создан',
+        successUpdated: 'План обновлен',
+        successDeleted: 'План удален',
+        errorLoad: 'Не удалось загрузить планы',
+        cannotDeleteFree: 'Бесплатный план невозможно удалить',
+        cannotDeleteHasUsers: 'Невозможно удалить план — есть активные пользователи',
+        valueInfiniteHint: 'Пусто или -1 = без ограничений',
+        unknownError: 'Произошла ошибка',
+      },
     },
   },
   en: {
@@ -1558,6 +1681,47 @@ export const translations: Record<StaticLocale, TranslationTree> = {
         currentKey: 'Current key',
         save: 'Save',
         saved: 'Saved',
+      },
+      plans: {
+        title: 'Billing Plans',
+        description: 'Manage tiers and licensing',
+        navLabel: 'Plans',
+        tableSort: 'Sort order',
+        tableName: 'Name',
+        tablePrice: 'Monthly price',
+        tableYearlyPrice: 'Yearly price',
+        tableFree: 'Free',
+        tableActive: 'Active',
+        tableTrialDays: 'Trial days',
+        tableActions: 'Actions',
+        limitsSectionTitle: 'Limits',
+        featuresSectionTitle: 'Features',
+        createTitle: 'New plan',
+        editTitle: 'Edit plan',
+        fieldName: 'Name',
+        fieldDescription: 'Description',
+        fieldPriceMonthly: 'Monthly price',
+        fieldPriceYearly: 'Yearly price',
+        fieldFirstMonthPrice: 'First month price',
+        fieldTrialDays: 'Trial days',
+        fieldSortOrder: 'Sort order',
+        fieldIsActive: 'Active',
+        fieldIsFreePlan: 'Free plan',
+        limitInfinite: 'Unlimited',
+        save: 'Save',
+        saving: 'Saving...',
+        create: 'Create plan',
+        creating: 'Creating plan...',
+        delete: 'Delete',
+        deleteConfirm: 'Delete plan?',
+        successCreated: 'Plan created',
+        successUpdated: 'Plan updated',
+        successDeleted: 'Plan deleted',
+        errorLoad: 'Failed to load plans',
+        cannotDeleteFree: 'Cannot delete free plan',
+        cannotDeleteHasUsers: 'Cannot delete plan — active users exist',
+        valueInfiniteHint: 'Leave empty or -1 for unlimited',
+        unknownError: 'An error occurred',
       },
     },
   },

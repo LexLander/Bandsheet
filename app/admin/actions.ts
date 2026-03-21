@@ -5,3 +5,4 @@
 export * from './actions/security'
 export * from './actions/users'
 export * from './actions/i18n'
+export * from './actions/plans'
