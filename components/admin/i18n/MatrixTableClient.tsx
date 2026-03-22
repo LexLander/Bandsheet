@@ -78,13 +78,17 @@ function TranslationMatrixTable({
 }: TranslationMatrixTableProps) {
   return (
     <div className="overflow-x-auto rounded-xl border border-black/10 dark:border-white/10">
-      <table className="w-full min-w-[960px] text-sm">
+      <table className="w-full text-sm">
         <thead className="bg-black/5 dark:bg-white/5">
           <tr>
-            <th className="px-3 py-2 text-left">{columnKeyLabel}</th>
-            <th className="px-3 py-2 text-left">{columnEnglishLabel}</th>
+            <th className="px-3 py-2 text-left break-words whitespace-pre-line">
+              {columnKeyLabel}
+            </th>
+            <th className="px-3 py-2 text-left break-words whitespace-pre-line">
+              {columnEnglishLabel}
+            </th>
             {editableLanguages.map((lang) => (
-              <th key={lang.code} className="px-3 py-2 text-left">
+              <th key={lang.code} className="px-3 py-2 text-left break-words whitespace-pre-line">
                 {lang.name}
               </th>
             ))}
@@ -96,11 +100,13 @@ function TranslationMatrixTable({
               key={variable.id}
               className="border-t border-black/10 dark:border-white/10 align-top"
             >
-              <td className="px-3 py-2">
-                <code className="text-xs text-foreground/60 font-mono">{variable.var_key}</code>
+              <td className="px-3 py-2 break-words whitespace-pre-line">
+                <code className="text-xs text-foreground/60 font-mono break-words whitespace-pre-line">
+                  {variable.var_key}
+                </code>
               </td>
-              <td className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.04]">
-                <p className="text-xs whitespace-pre-wrap text-foreground/70">
+              <td className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.04] break-words whitespace-pre-line">
+                <p className="text-xs break-words whitespace-pre-line text-foreground/70">
                   {variable.source_text}
                 </p>
               </td>
@@ -109,7 +115,7 @@ function TranslationMatrixTable({
                 const value = draftMap[key] ?? valueMap.get(key)?.value ?? ''
 
                 return (
-                  <td key={key} className="px-3 py-2 bg-[#fffef0]">
+                  <td key={key} className="px-3 py-2 bg-[#fffef0] break-words whitespace-pre-line">
                     <textarea
                       value={value}
                       onChange={(event) =>
@@ -119,7 +125,7 @@ function TranslationMatrixTable({
                       onBlur={() => onBlurSave(variable.id, lang.code)}
                       placeholder={notFilledLabel}
                       rows={1}
-                      className="w-full resize-none overflow-hidden rounded px-0 py-1 text-xs border-none bg-transparent focus:bg-[#fff9c4] focus:outline-none"
+                      className="w-full min-h-[32px] resize-y overflow-auto rounded px-0 py-1 text-xs border-none bg-transparent focus:bg-[#fff9c4] focus:outline-none break-words whitespace-pre-line"
                     />
                   </td>
                 )
