@@ -138,6 +138,8 @@ function TranslationMatrixTable({
   )
 }
 
+const PAGE_SIZE = 50
+
 export default function MatrixTableClient({
   languages,
   variables,
@@ -150,6 +152,7 @@ export default function MatrixTableClient({
   const { t } = useLanguage()
   const [isPending, startTransition] = useTransition()
   const [filter, setFilter] = useState<'all' | 'empty'>('all')
+  const [page, setPage] = useState(0)
 
   const matrixLanguages = useMemo(() => {
     const active = languages.filter((lang) => lang.is_enabled)
@@ -195,10 +198,15 @@ export default function MatrixTableClient({
     return set
   }, [draftMap, editableLanguages, valueMap, variables])
 
-  const visibleVariables = useMemo(() => {
+  const filteredVariables = useMemo(() => {
     if (filter === 'all') return variables
     return variables.filter((variable) => rowsWithMissing.has(variable.id))
   }, [filter, rowsWithMissing, variables])
+
+  const totalPages = Math.max(1, Math.ceil(filteredVariables.length / PAGE_SIZE))
+  const visibleVariables = useMemo(() => {
+    return filteredVariables.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  }, [filteredVariables, page])
 
   function autoResize(event: React.FormEvent<HTMLTextAreaElement>) {
     const element = event.currentTarget
@@ -236,12 +244,18 @@ export default function MatrixTableClient({
       <div className="flex items-center gap-2">
         <FilterToggleButton
           active={filter === 'all'}
-          onClick={() => setFilter('all')}
+          onClick={() => {
+            setFilter('all')
+            setPage(0)
+          }}
           label={t.admin.languages.filterAll}
         />
         <FilterToggleButton
           active={filter === 'empty'}
-          onClick={() => setFilter('empty')}
+          onClick={() => {
+            setFilter('empty')
+            setPage(0)
+          }}
           label={t.admin.languages.filterEmpty}
         />
         {isPending && <span className="text-xs text-foreground/60">{t.profile.saving}</span>}
@@ -259,6 +273,28 @@ export default function MatrixTableClient({
         columnKeyLabel={t.admin.languages.columnKey}
         columnEnglishLabel={t.admin.languages.columnEnglish}
       />
+
+      <div className="flex items-center justify-center gap-2 mt-2">
+        <button
+          type="button"
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50"
+          onClick={() => setPage((p) => Math.max(0, p - 1))}
+          disabled={page === 0}
+        >
+          ←
+        </button>
+        <span className="text-xs">
+          {page + 1} / {totalPages}
+        </span>
+        <button
+          type="button"
+          className="px-3 py-1 rounded border text-sm disabled:opacity-50"
+          onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          disabled={page >= totalPages - 1}
+        >
+          →
+        </button>
+      </div>
     </section>
   )
 }
