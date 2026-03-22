@@ -20,6 +20,7 @@ type TranslationTree = {
       profile: string
       settings: string
       users: string
+      plans: string
       languages: string
       logs: string
       adminPanel: string
