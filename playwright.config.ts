@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+dotenv.config({ path: '.env.test' })
 import { defineConfig, devices } from '@playwright/test'
 
 const port = process.env.PLAYWRIGHT_PORT ?? '3100'

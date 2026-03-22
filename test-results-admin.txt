@@ -1,0 +1,110 @@
+
+> bandsheet@0.1.0 test:e2e:admin
+> playwright test admin-plans
+
+
+Running 5 tests using 5 workers
+
+Cookies after API+localStorage login:
+ sb-enwfljgkubdqbaymkqbu-auth-token = {"access_token":"eyJhbGciOiJFUzI1NiIsImtpZCI6IjJlM...
+Final URL: http://127.0.0.1:3100/admin/plans
+Cookies after API+localStorage login:
+ sb-enwfljgkubdqbaymkqbu-auth-token = {"access_token":"eyJhbGciOiJFUzI1NiIsImtpZCI6IjJlM...
+Final URL: http://127.0.0.1:3100/admin/plans
+Cookies after API+localStorage login:
+ sb-enwfljgkubdqbaymkqbu-auth-token = {"access_token":"eyJhbGciOiJFUzI1NiIsImtpZCI6IjJlM...
+Final URL: http://127.0.0.1:3100/admin/plans
+Cookies after API+localStorage login:
+ sb-enwfljgkubdqbaymkqbu-auth-token = {"access_token":"eyJhbGciOiJFUzI1NiIsImtpZCI6IjJlM...
+Final URL: http://127.0.0.1:3100/admin/plans
+Cookies after API+localStorage login:
+ sb-enwfljgkubdqbaymkqbu-auth-token = {"access_token":"eyJhbGciOiJFUzI1NiIsImtpZCI6IjJlM...
+Final URL: http://127.0.0.1:3100/admin/plans
+  ✓  3 [chromium] › tests/e2e/admin-plans.spec.ts:6:7 › Адмінка: Плани › Таблиця планів відображається (19.4s)
+  ✘  4 [chromium] › tests/e2e/admin-plans.spec.ts:55:7 › Адмінка: Плани › Переклади (19.4s)
+  ✘  1 [chromium] › tests/e2e/admin-plans.spec.ts:45:7 › Адмінка: Плани › Редагування функцій (30.0s)
+  ✘  2 [chromium] › tests/e2e/admin-plans.spec.ts:13:7 › Адмінка: Плани › Редагування ціни плану (30.0s)
+  ✘  5 [chromium] › tests/e2e/admin-plans.spec.ts:30:7 › Адмінка: Плани › Редагування лімітів (30.1s)
+
+
+  1) [chromium] › tests/e2e/admin-plans.spec.ts:13:7 › Адмінка: Плани › Редагування ціни плану ─────
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('tr').filter({ hasText: 'Просунутий' }).first().locator('button').filter({ hasText: 'редагувати' })[22m
+
+
+      14 |     await adminPage.goto('/admin/plans')
+      15 |     const editRow = adminPage.locator('tr', { hasText: 'Просунутий' }).first()
+    > 16 |     await editRow.locator('button', { hasText: 'редагувати' }).click({ force: true })
+         |                                                                ^
+      17 |     const priceInput = adminPage.getByLabel(/місяць/i)
+      18 |     await priceInput.fill('')
+      19 |     await priceInput.type('550')
+        at /Users/alex/Desktop/MyProjects/SetListSong/tests/e2e/admin-plans.spec.ts:16:64
+
+    Error Context: test-results/admin-plans-Адмінка-Плани-Редагування-ціни-плану-chromium/error-context.md
+
+  2) [chromium] › tests/e2e/admin-plans.spec.ts:30:7 › Адмінка: Плани › Редагування лімітів ────────
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('tr').filter({ hasText: 'Просунутий' }).first().locator('button').filter({ hasText: 'ліміти' })[22m
+
+
+      31 |     await adminPage.goto('/admin/plans')
+      32 |     const limitsRow = adminPage.locator('tr', { hasText: 'Просунутий' }).first()
+    > 33 |     await limitsRow.locator('button', { hasText: 'ліміти' }).click({ force: true })
+         |                                                              ^
+      34 |     const maxGroupsInput = adminPage.getByLabel(/Груп/i)
+      35 |     await expect(maxGroupsInput).toHaveValue('3')
+      36 |     await maxGroupsInput.fill('5')
+        at /Users/alex/Desktop/MyProjects/SetListSong/tests/e2e/admin-plans.spec.ts:33:62
+
+    Error Context: test-results/admin-plans-Адмінка-Плани-Редагування-лімітів-chromium/error-context.md
+
+  3) [chromium] › tests/e2e/admin-plans.spec.ts:45:7 › Адмінка: Плани › Редагування функцій ────────
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('tr').filter({ hasText: 'Просунутий' }).first().locator('button').filter({ hasText: 'функції' })[22m
+
+
+      46 |     await adminPage.goto('/admin/plans')
+      47 |     const featuresRow = adminPage.locator('tr', { hasText: 'Просунутий' }).first()
+    > 48 |     await featuresRow.locator('button', { hasText: 'функції' }).click({ force: true })
+         |                                                                 ^
+      49 |     const importUrlCheckbox = adminPage.getByLabel(/Імпорт з URL/i)
+      50 |     const chordPaletteCheckbox = adminPage.getByLabel(/Палітра акордів/i)
+      51 |     await expect(importUrlCheckbox).toBeChecked()
+        at /Users/alex/Desktop/MyProjects/SetListSong/tests/e2e/admin-plans.spec.ts:48:65
+
+    Error Context: test-results/admin-plans-Адмінка-Плани-Редагування-функцій-chromium/error-context.md
+
+  4) [chromium] › tests/e2e/admin-plans.spec.ts:55:7 › Адмінка: Плани › Переклади ──────────────────
+
+    Error: locator.textContent: Error: strict mode violation: locator('h1') resolved to 2 elements:
+        1) <h1 class="text-lg font-bold">Admin panel</h1> aka locator('header').getByText('Admin panel')
+        2) <h1 class="text-2xl font-bold">Admin panel</h1> aka getByRole('heading', { name: 'Admin panel' })
+
+    Call log:
+    [2m  - waiting for locator('h1')[22m
+
+
+      55 |   test('Переклади', async ({ adminPage }) => {
+      56 |     await adminPage.goto('/admin/plans')
+    > 57 |     const title = await adminPage.locator('h1').textContent()
+         |                                                 ^
+      58 |     expect(title && title.trim().length).toBeGreaterThan(0)
+      59 |     const buttons = adminPage.locator('button')
+      60 |     const count = await buttons.count()
+        at /Users/alex/Desktop/MyProjects/SetListSong/tests/e2e/admin-plans.spec.ts:57:49
+
+    Error Context: test-results/admin-plans-Адмінка-Плани-Переклади-chromium/error-context.md
+

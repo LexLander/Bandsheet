@@ -16,6 +16,7 @@
     "smoke:invite": "vitest run tests/public/invite.actions.test.ts",
     "smoke:library": "vitest run tests/api/library.route.test.ts tests/api/library.id.route.test.ts",
     "test:e2e": "playwright test",
+    "test:e2e:admin": "playwright test admin-plans",
     "test:e2e:ci": "playwright test --reporter=line",
     "test": "vitest run",
     "test:watch": "vitest",
