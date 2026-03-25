@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useMemo, useState, useTransition, useEffect } from 'react'
 import { saveI18nTranslationValue } from '@/app/admin/actions'
 import { useLanguage } from '@/components/i18n/LanguageProvider'
 
@@ -95,43 +95,57 @@ function TranslationMatrixTable({
           </tr>
         </thead>
         <tbody>
-          {visibleVariables.map((variable) => (
-            <tr
-              key={variable.id}
-              className="border-t border-black/10 dark:border-white/10 align-top"
-            >
-              <td className="px-3 py-2 break-words whitespace-pre-line">
-                <code className="text-xs text-foreground/60 font-mono break-words whitespace-pre-line">
-                  {variable.var_key}
-                </code>
+          {visibleVariables.length === 0 ? (
+            <tr>
+              <td
+                colSpan={2 + editableLanguages.length}
+                className="px-3 py-6 text-center text-foreground/60 text-sm"
+              >
+                Нет данных
               </td>
-              <td className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.04] break-words whitespace-pre-line">
-                <p className="text-xs break-words whitespace-pre-line text-foreground/70">
-                  {variable.source_text}
-                </p>
-              </td>
-              {editableLanguages.map((lang) => {
-                const key = cellKey(variable.id, lang.code)
-                const value = draftMap[key] ?? valueMap.get(key)?.value ?? ''
-
-                return (
-                  <td key={key} className="px-3 py-2 bg-[#fffef0] break-words whitespace-pre-line">
-                    <textarea
-                      value={value}
-                      onChange={(event) =>
-                        onValueChange(variable.id, lang.code, event.target.value)
-                      }
-                      onInput={autoResize}
-                      onBlur={() => onBlurSave(variable.id, lang.code)}
-                      placeholder={notFilledLabel}
-                      rows={1}
-                      className="w-full min-h-[32px] resize-y overflow-auto rounded px-0 py-1 text-xs border-none bg-transparent focus:bg-[#fff9c4] focus:outline-none break-words whitespace-pre-line"
-                    />
-                  </td>
-                )
-              })}
             </tr>
-          ))}
+          ) : (
+            visibleVariables.map((variable) => (
+              <tr
+                key={variable.id}
+                className="border-t border-black/10 dark:border-white/10 align-top"
+              >
+                <td className="px-3 py-2 break-words whitespace-pre-line">
+                  <code className="text-xs text-foreground/60 font-mono break-words whitespace-pre-line">
+                    {variable.var_key}
+                  </code>
+                </td>
+                <td className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.04] break-words whitespace-pre-line">
+                  <p className="text-xs break-words whitespace-pre-line text-foreground/70">
+                    {variable.source_text}
+                  </p>
+                </td>
+                {editableLanguages.map((lang) => {
+                  const key = cellKey(variable.id, lang.code)
+                  const value = draftMap[key] ?? valueMap.get(key)?.value ?? ''
+
+                  return (
+                    <td
+                      key={key}
+                      className="px-3 py-2 bg-[#fffef0] break-words whitespace-pre-line"
+                    >
+                      <textarea
+                        value={value}
+                        onChange={(event) =>
+                          onValueChange(variable.id, lang.code, event.target.value)
+                        }
+                        onInput={autoResize}
+                        onBlur={() => onBlurSave(variable.id, lang.code)}
+                        placeholder={notFilledLabel}
+                        rows={1}
+                        className="w-full min-h-[32px] resize-y overflow-auto rounded px-0 py-1 text-xs border-none bg-transparent focus:bg-[#fff9c4] focus:outline-none break-words whitespace-pre-line"
+                      />
+                    </td>
+                  )
+                })}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
@@ -153,6 +167,8 @@ export default function MatrixTableClient({
   const [isPending, startTransition] = useTransition()
   const [filter, setFilter] = useState<'all' | 'empty'>('all')
   const [page, setPage] = useState(0)
+
+  // ...
 
   const matrixLanguages = useMemo(() => {
     const active = languages.filter((lang) => lang.is_enabled)
@@ -204,6 +220,7 @@ export default function MatrixTableClient({
   }, [filter, rowsWithMissing, variables])
 
   const totalPages = Math.max(1, Math.ceil(filteredVariables.length / PAGE_SIZE))
+
   const visibleVariables = useMemo(() => {
     return filteredVariables.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
   }, [filteredVariables, page])
